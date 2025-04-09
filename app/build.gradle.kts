@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -102,4 +102,10 @@ dependencies {
 
     // OkHttp (Networking)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    //Json serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+
+    //NEVER USE GSON, USE SERIALIZATION KOTLIN INSTEAD
 }
