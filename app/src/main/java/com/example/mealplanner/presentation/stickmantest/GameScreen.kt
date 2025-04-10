@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
@@ -767,4 +768,91 @@ fun KamehamehaAnimation() {
             Text("Replay Kamehameha")
         }
     }
+}
+
+@Composable
+fun StickmanFightScreen() {
+    val stickman1X = remember { Animatable(200f) }
+    val stickman2X = remember { 700f }
+    var isAttacking by remember { mutableStateOf(false) }
+    var attackTrigger by remember { mutableStateOf(false) }
+    var attackFrame by remember { mutableStateOf(0) }
+
+    // Xử lý animation
+    LaunchedEffect(attackTrigger) {
+        if (attackTrigger) {
+            isAttacking = true
+
+            // Move forward
+            stickman1X.animateTo(
+                targetValue = stickman2X - 100f,
+                animationSpec = tween(durationMillis = 300)
+            )
+
+            // Change pose to "punch"
+            attackFrame = 1
+            delay(200)
+
+            // Trúng đòn (thêm rung/red sau)
+            attackFrame = 2
+            delay(200)
+
+            // Rút lui
+            stickman1X.animateTo(
+                targetValue = 200f,
+                animationSpec = tween(durationMillis = 300)
+            )
+
+            attackFrame = 0
+            isAttacking = false
+            attackTrigger = false
+        }
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawStickman(x = stickman1X.value, y = 600f, attackFrame)
+            drawStickman(x = stickman2X, y = 600f, attackFrame = 0)
+        }
+
+        Button(
+            onClick = {
+                if (!isAttacking) attackTrigger = true
+            },
+            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
+        ) {
+            Text("Punch!")
+        }
+    }
+}
+
+
+fun DrawScope.drawStickman(x: Float, y: Float, attackFrame: Int) {
+    val stroke = Stroke(width = 8f)
+
+    // Head
+    drawCircle(Color.Black, radius = 30f, center = Offset(x, y - 80f), style = stroke)
+
+    // Body
+    drawLine(Color.Black, Offset(x, y - 50f), Offset(x, y + 50f), strokeWidth = 8f)
+
+    // Arms theo frame
+    when (attackFrame) {
+        0 -> { // Bình thường
+            drawLine(Color.Black, Offset(x, y - 20f), Offset(x - 40f, y + 20f), strokeWidth = 8f)
+            drawLine(Color.Black, Offset(x, y - 20f), Offset(x + 40f, y + 20f), strokeWidth = 8f)
+        }
+        1 -> { // Giơ tay phải lên đấm
+            drawLine(Color.Black, Offset(x, y - 20f), Offset(x - 40f, y + 20f), strokeWidth = 8f)
+            drawLine(Color.Red, Offset(x, y - 20f), Offset(x + 60f, y - 40f), strokeWidth = 10f)
+        }
+        2 -> { // Tay thụt về (gồng cơ)
+            drawLine(Color.Black, Offset(x, y - 20f), Offset(x - 30f, y + 10f), strokeWidth = 8f)
+            drawLine(Color.Black, Offset(x, y - 20f), Offset(x + 10f, y - 30f), strokeWidth = 8f)
+        }
+    }
+
+    // Legs
+    drawLine(Color.Black, Offset(x, y + 50f), Offset(x - 30f, y + 100f), strokeWidth = 8f)
+    drawLine(Color.Black, Offset(x, y + 50f), Offset(x + 30f, y + 100f), strokeWidth = 8f)
 }

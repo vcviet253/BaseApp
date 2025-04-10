@@ -14,6 +14,7 @@ import com.example.mealplanner.presentation.stickmantest.KamehamehaDemo
 import com.example.mealplanner.presentation.stickmantest.KamehamehaEpic
 import com.example.mealplanner.presentation.stickmantest.StickmanCanvas
 import com.example.mealplanner.presentation.stickmantest.StickmanFightScene
+import com.example.mealplanner.presentation.stickmantest.StickmanFightScreen
 import com.example.mealplanner.presentation.stickmantest.StickmanWithSwordCanvas
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MealPlannerTheme {
-                DiaryScreen()
+                StickmanFightScreen()
             }
         }
     }
