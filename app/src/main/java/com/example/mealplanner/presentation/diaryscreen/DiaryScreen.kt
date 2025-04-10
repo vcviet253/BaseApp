@@ -26,14 +26,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import coil.compose.rememberAsyncImagePainter
+import kotlin.math.abs
+
 
 @Composable
 fun DiaryScreen(viewModel: DiaryViewModel = hiltViewModel()) {
@@ -45,16 +56,6 @@ fun DiaryScreen(viewModel: DiaryViewModel = hiltViewModel()) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Nhập prompt
-        OutlinedTextField(
-            value = state.prompt,
-            onValueChange = viewModel::onPromptChanged,
-            label = { Text("Viết cảm xúc của bạn...") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(12.dp))
-
         // Giả lập ảnh base64 đã chọn
         ImagePickerButton(viewModel)
 
@@ -64,28 +65,37 @@ fun DiaryScreen(viewModel: DiaryViewModel = hiltViewModel()) {
         if (state.images.isNotEmpty()) {
             Text("Ảnh đã chọn:", style = MaterialTheme.typography.titleMedium)
 
-            state.images.forEach { base64 ->
-                val imageBitmap = remember(base64) {
-                    try {
-                        val imageBytes = Base64.decode(base64, Base64.DEFAULT)
-                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            ?.asImageBitmap()
-                    } catch (e: Exception) {
-                        null
-                    }
-                }
+//            state.images.forEach { base64 ->
+//                val imageBitmap = remember(base64) {
+//                    try {
+//                        val imageBytes = Base64.decode(base64, Base64.DEFAULT)
+//                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//                            ?.asImageBitmap()
+//                    } catch (e: Exception) {
+//                        null
+//                    }
+//                }
+//
+//                imageBitmap?.let {
+//                    Image(
+//                        bitmap = it,
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(200.dp)
+//                            .padding(vertical = 8.dp)
+//                    )
+//                }
+//            }
 
-                imageBitmap?.let {
-                    Image(
-                        bitmap = it,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 8.dp)
-                    )
-                }
-            }
+            HorizontalPagerWithDepthTransition(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                viewModel = viewModel
+            )
+        } else {
+            Text("Chưa có ảnh nào được chọn.")
         }
 
         Spacer(Modifier.height(12.dp))
@@ -147,3 +157,59 @@ fun ImagePickerButton(viewModel: DiaryViewModel) {
         Text("Chọn ảnh")
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HorizontalPagerWithDepthTransition(modifier: Modifier = Modifier, viewModel: DiaryViewModel) {
+    val state by viewModel.uiState.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { state.images.size })
+    HorizontalPager(
+        modifier = modifier.fillMaxSize(),
+        state = pagerState,
+        pageSpacing = 0.dp
+    ) { page ->
+        Box(
+            Modifier
+                .pagerDepthTransition(page, pagerState)
+                .fillMaxSize()
+        ) {
+            val base64 = state.images[page]
+
+            val imageBitmap = remember(base64) {
+                base64?.let {
+                    try {
+                        val imageBytes = Base64.decode(it, Base64.DEFAULT)
+                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            ?.asImageBitmap()
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            }
+
+            imageBitmap?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
+
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun Modifier.pagerDepthTransition(page: Int, pagerState: PagerState): Modifier = this.then(
+    graphicsLayer {
+        val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+        val scale = 1f - (0.25f * abs(pageOffset))
+        scaleX = scale
+        scaleY = scale
+        alpha = 1f - abs(pageOffset)
+    }
+)
