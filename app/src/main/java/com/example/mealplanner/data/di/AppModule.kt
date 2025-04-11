@@ -2,6 +2,7 @@ package com.example.mealplanner.data.di
 
 import com.example.mealplanner.common.Constants
 import com.example.mealplanner.data.remote.GeminiApi
+import com.example.mealplanner.data.remote.WebSocketChatClient
 import com.example.mealplanner.data.repository.GeminiRepositoryImpl
 import com.example.mealplanner.domain.repository.GeminiRepository
 import com.google.gson.Gson
@@ -65,4 +66,20 @@ object AppModule {
     fun provideGeminiApiKey(): String {
         return "AIzaSyAXvM9mVbxXlSWijfNbJCl6-VoeeUXorw0" // 👈 Thay bằng API key thật (hoặc đọc từ BuildConfig)
     }
+
+    @Provides
+    fun provideOkHttpClient() : OkHttpClient {
+        return OkHttpClient.Builder().build()
+    }
+
+    @Provides
+    fun provideWebSocketChatClient(
+        okHttpClient: OkHttpClient
+    ): WebSocketChatClient {
+        return WebSocketChatClient(okHttpClient)
+    }
+
+    @Provides
+    @Named("UserId")
+    fun provideUserId(): String = "user123"
 }

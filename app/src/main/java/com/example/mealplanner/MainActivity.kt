@@ -3,6 +3,7 @@ package com.example.mealplanner
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.example.mealplanner.presentation.chat.ChatScreen
 
 import com.example.mealplanner.presentation.diaryscreen.DiaryScreen
 import com.example.mealplanner.presentation.stickmantest.EpicStickmanAnimation
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MealPlannerTheme {
-                StickmanFightScreen()
+                ChatScreen()
             }
         }
     }
