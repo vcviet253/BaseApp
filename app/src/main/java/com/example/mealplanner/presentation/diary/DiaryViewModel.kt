@@ -1,10 +1,8 @@
-package com.example.mealplanner.presentation.diaryscreen
+package com.example.mealplanner.presentation.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mealplanner.data.remote.dto.GeminiContent
 import com.example.mealplanner.domain.usecase.GenerateDiaryUseCase
-import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

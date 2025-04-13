@@ -1,4 +1,4 @@
-package com.example.mealplanner.presentation.diaryscreen
+package com.example.mealplanner.presentation.diary
 
 data class DiaryUiState(
     val images: List<String> = emptyList(),

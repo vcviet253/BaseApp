@@ -1,4 +1,4 @@
-package com.example.mealplanner.data.remote.dto
+package com.example.mealplanner.data.remote.dto.gemini
 
 import kotlinx.serialization.Serializable
 

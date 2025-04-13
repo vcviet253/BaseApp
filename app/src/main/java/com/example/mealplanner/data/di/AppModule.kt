@@ -1,20 +1,23 @@
 package com.example.mealplanner.data.di
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.example.mealplanner.common.Constants
+import com.example.mealplanner.data.remote.AuthApi
+import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
 import com.example.mealplanner.data.remote.WebSocketChatClient
 import com.example.mealplanner.data.repository.GeminiRepositoryImpl
+import com.example.mealplanner.data.utils.NetworkHelper
 import com.example.mealplanner.domain.repository.GeminiRepository
-import com.google.gson.Gson
-import com.google.gson.internal.GsonBuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -36,20 +39,25 @@ object AppModule {
 //        return MealRepositoryImpl(api)
 //    }
 
+    //Gemini AI API
     @Provides
     @Singleton
     fun provideGeminiApi(): GeminiApi {
-        val client = OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }).build()
-
-        return Retrofit.Builder()
-            .baseUrl("https://generativelanguage.googleapis.com/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        return NetworkHelper.createRetrofit(Constants.GEMINI_API_BASE_URL)
             .create(GeminiApi::class.java)
+    }
+
+    //Authentication API (Login)
+    @Provides
+    @Singleton
+    fun provideAuthApi(): AuthApi {
+        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL).create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatApi(): ChatApi {
+        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL).create(ChatApi::class.java)
     }
 
     @Provides
@@ -61,6 +69,7 @@ object AppModule {
         return GeminiRepositoryImpl(api, apiKey)
     }
 
+    //Gemini API Key
     @Provides
     @Named("gemini_api_key")
     fun provideGeminiApiKey(): String {
@@ -68,7 +77,7 @@ object AppModule {
     }
 
     @Provides
-    fun provideOkHttpClient() : OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder().build()
     }
 
@@ -79,7 +88,25 @@ object AppModule {
         return WebSocketChatClient(okHttpClient)
     }
 
+    //UserID
     @Provides
     @Named("UserId")
     fun provideUserId(): String = "user123"
+
+    //Shared Preferences for user's token, configs
+    @Provides
+    @Singleton
+    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        return EncryptedSharedPreferences.create(
+            context,
+            "user_prefs",         // Tên file
+            masterKey,              // Khóa mã hóa
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
 }

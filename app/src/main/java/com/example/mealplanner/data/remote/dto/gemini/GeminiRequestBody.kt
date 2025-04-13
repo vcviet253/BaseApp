@@ -1,6 +1,5 @@
-package com.example.mealplanner.data.remote.dto
+package com.example.mealplanner.data.remote.dto.gemini
 
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

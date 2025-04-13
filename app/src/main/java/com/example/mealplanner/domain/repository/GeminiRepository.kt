@@ -1,7 +1,6 @@
 package com.example.mealplanner.domain.repository
 
-import com.example.mealplanner.data.remote.dto.GeminiContent
-import com.example.mealplanner.domain.model.DiaryEntry
+import com.example.mealplanner.data.remote.dto.gemini.GeminiContent
 
 interface GeminiRepository {
     suspend fun generateDiaryFromContent(contents: List<GeminiContent>): String

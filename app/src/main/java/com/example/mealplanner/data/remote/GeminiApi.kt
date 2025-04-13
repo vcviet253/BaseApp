@@ -1,9 +1,8 @@
 package com.example.mealplanner.data.remote
 
-import com.example.mealplanner.data.remote.dto.GeminiRequestBody
-import com.example.mealplanner.data.remote.dto.GeminiResponse
+import com.example.mealplanner.data.remote.dto.gemini.GeminiRequestBody
+import com.example.mealplanner.data.remote.dto.gemini.GeminiResponse
 import retrofit2.http.Body
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query

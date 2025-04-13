@@ -25,9 +25,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
+    val messages by viewModel.messages.collectAsState()
     var toUser by remember { mutableStateOf("user456") }
     var text by remember { mutableStateOf("") }
     var fromUser by remember { mutableStateOf("user123") }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -37,7 +39,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
         ) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(state.messages) { msg ->
-                    Text("${msg.timestamp} From ${msg.from} to ${msg.to} : ${msg.text} ")
+                    Text("${msg.timestamp} From ${msg.fromUser} to ${msg.toUser} : ${msg.text} ")
                 }
             }
 
@@ -75,7 +77,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 onClick = {
                     if (text.isNotBlank()) {
                         viewModel.setUserId(fromUser)
-                        viewModel.sendMessage(toUser, text)
+                        viewModel.sendMessage(toUser, text, fromUser)
                         text = ""
                     }
                 },

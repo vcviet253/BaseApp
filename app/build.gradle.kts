@@ -112,7 +112,11 @@ dependencies {
     // Image loading with Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-// Horizontal Pager
+    // Horizontal Pager
     implementation("com.google.accompanist:accompanist-pager:0.34.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0") // optional for page indicators
+
+    //AndroidX Security (support EncryptedSharedPreferences with AES256 encryption)
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
+
 }

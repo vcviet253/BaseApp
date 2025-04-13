@@ -1,11 +1,22 @@
 package com.example.mealplanner.domain.model
 
+import com.example.mealplanner.data.remote.dto.chat.SendMessageRequest
 import java.util.concurrent.TimeUnit
 
-class Message(
-    val from: String,
-    val to: String,
+data class Message(
+    val serverId: String?,
+    val tempId: String,
+    val fromUser: String,
+    val toUser: String,
     val text: String,
-    val timestamp: Long,
-) {
+    val timestamp: Long
+)
+
+fun Message.toSendMessageRequest() : SendMessageRequest {
+    return SendMessageRequest(
+        tempId = this.tempId,
+        fromUser = this.fromUser,
+        toUser = this.toUser,
+        text= this.text
+        )
 }

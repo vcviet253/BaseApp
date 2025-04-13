@@ -2,14 +2,9 @@ package com.example.mealplanner.data.repository
 
 import android.util.Log
 import com.example.mealplanner.data.remote.GeminiApi
-import com.example.mealplanner.data.remote.dto.GeminiContent
-import com.example.mealplanner.data.remote.dto.GeminiRequestBody
-import com.example.mealplanner.data.remote.dto.buildGeminiRequest
-import com.example.mealplanner.domain.model.DiaryEntry
+import com.example.mealplanner.data.remote.dto.gemini.GeminiContent
+import com.example.mealplanner.data.remote.dto.gemini.buildGeminiRequest
 import com.example.mealplanner.domain.repository.GeminiRepository
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

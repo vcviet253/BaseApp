@@ -1,12 +1,18 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict
-from datetime import datetime
+from typing import Dict, List
+from pydantic import BaseModel
+from datetime import datetime, timedelta
 import json
+import jwt
+import uuid
+
+SECRET_KEY = "your_very_secret_key"
+ALGORITHM = "HS256"
 
 app = FastAPI()
 
-# Cho phép truy cập từ mọi domain (để test Android)
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  
@@ -15,25 +21,74 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Lưu WebSocket của từng người dùng
+# Active WebSocket connections
 active_connections: Dict[str, WebSocket] = {}
 
-# Kiểu tin nhắn
-class Message:
-    def __init__(self, from_user: str, to_user: str, text: str, timestamp: int):
-        self.from_user = from_user
-        self.to_user = to_user
-        self.text = text
-        self.timestamp = timestamp
+# ✅ JWT Token Utils
+def create_token(user_id: str):
+    payload = {
+        "sub": user_id,
+        "exp": datetime.utcnow() + timedelta(hours=1)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    def to_json(self):
-        return json.dumps({
-            "from": self.from_user,
-            "to": self.to_user,
-            "text": self.text,
-            "timestamp": self.timestamp
-        })
+# ✅ Login endpoint
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
+@app.post("/login")
+def login(data: LoginRequest):
+    if data.username == "user123" and data.password == "pass123":
+        token = create_token(data.username)
+        return {"token": token}
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+
+# ✅ Message model
+class SendMessageRequest(BaseModel):
+    tempId: str
+    from_user: str
+    to_user: str
+    text: str
+
+class WebSocketMessage(BaseModel):
+    serverId: str
+    tempId: str
+    from_user: str
+    to_user: str
+    text: str
+    timestamp: int
+
+# ✅ POST to send message
+@app.post("/send_message")
+async def send_message(data: SendMessageRequest):
+    # Simulate saving to DB and generate real serverId
+    server_id = str(uuid.uuid4())
+    timestamp = int(datetime.utcnow().timestamp())
+
+    message = WebSocketMessage(
+        serverId=server_id,
+        tempId=data.tempId,
+        from_user=data.from_user,
+        to_user=data.to_user,
+        text=data.text,
+        timestamp=timestamp
+    )
+
+    # Push to recipient (if online)
+    to_socket = active_connections.get(data.to_user)
+    if to_socket:
+        await to_socket.send_text(message.json())
+
+    # Echo back to sender
+    from_socket = active_connections.get(data.from_user)
+    if from_socket:
+        await from_socket.send_text(message.json())
+
+    return {"status": "sent"}  # ✅ lightweight response
+
+
+#Web socket handler,establishes a WebSocket connection between a client and the server
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
@@ -42,30 +97,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 
     try:
         while True:
-            raw_text = await websocket.receive_text()
-            print(f"[RECEIVED] From {user_id}: {raw_text}")
-
-            # Parse message
-            try:
-                data = json.loads(raw_text)
-                msg = Message(
-                    from_user=user_id,
-                    to_user=data.get("to"),
-                    text=data.get("text"),
-                    timestamp=int(datetime.utcnow().timestamp())
-                )
-
-                # Gửi đến người nhận nếu họ đang online
-                receiver_socket = active_connections.get(msg.to_user)
-                if receiver_socket:
-                    await receiver_socket.send_text(msg.to_json())
-                    print(f"[FORWARDED] {msg.from_user} -> {msg.to_user}")
-                else:
-                    print(f"[OFFLINE] {msg.to_user} not connected.")
-
-            except Exception as e:
-                print(f"[ERROR] Failed to parse/send message: {e}")
-
+            await websocket.receive_text()  # just keep alive,  FastAPI will disconnect the socket if nothing is being read => use loop to keep it open
     except WebSocketDisconnect:
         print(f"[DISCONNECTED] {user_id} left.")
-        del active_connections[user_id]
+        active_connections.pop(user_id, None)
