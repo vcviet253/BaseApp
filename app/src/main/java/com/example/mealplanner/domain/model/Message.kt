@@ -9,7 +9,8 @@ data class Message(
     val fromUser: String,
     val toUser: String,
     val text: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val status: MessageStatus = MessageStatus.SENDING,
 )
 
 fun Message.toSendMessageRequest() : SendMessageRequest {
@@ -19,4 +20,10 @@ fun Message.toSendMessageRequest() : SendMessageRequest {
         toUser = this.toUser,
         text= this.text
         )
+}
+
+enum class MessageStatus {
+    SENDING,
+    SENT,
+    FAILED
 }

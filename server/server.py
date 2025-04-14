@@ -4,8 +4,8 @@ from typing import Dict, List
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import json
-import jwt
 import uuid
+import jwt
 
 SECRET_KEY = "your_very_secret_key"
 ALGORITHM = "HS256"
@@ -32,14 +32,15 @@ def create_token(user_id: str):
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-# ✅ Login endpoint
+# ✅ Login Model
 class LoginRequest(BaseModel):
     username: str
     password: str
 
+
 @app.post("/login")
 def login(data: LoginRequest):
-    if data.username == "user123" and data.password == "pass123":
+    if (data.username == "user123" and data.password == "pass123") or (data.username == "user456" and data.password == "pass456"):
         token = create_token(data.username)
         return {"token": token}
     raise HTTPException(status_code=401, detail="Invalid credentials")

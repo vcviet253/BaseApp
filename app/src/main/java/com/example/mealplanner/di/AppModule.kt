@@ -1,10 +1,11 @@
-package com.example.mealplanner.data.di
+package com.example.mealplanner.di
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.mealplanner.common.Constants
+import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.data.remote.AuthApi
 import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
@@ -38,6 +39,7 @@ object AppModule {
 //    fun provideMealRepository(api: MealDbApi): MealRepository {
 //        return MealRepositoryImpl(api)
 //    }
+
 
     //Gemini AI API
     @Provides
@@ -96,17 +98,14 @@ object AppModule {
     //Shared Preferences for user's token, configs
     @Provides
     @Singleton
-    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    }
 
-        return EncryptedSharedPreferences.create(
-            context,
-            "user_prefs",         // Tên file
-            masterKey,              // Khóa mã hóa
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+    @Provides
+    @Singleton
+    fun provideUserPreferences(sharedPreferences: SharedPreferences): UserPreferences
+    {
+        return UserPreferences(sharedPreferences)
     }
 }

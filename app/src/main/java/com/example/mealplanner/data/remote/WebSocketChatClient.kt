@@ -27,7 +27,7 @@ class WebSocketChatClient @Inject constructor(
     val incomingMessages = _incomingMessages.asSharedFlow()
 
     fun connect(userId: String) {
-        val request = Request.Builder().url("ws://192.168.1.100:8000/ws/$userId").build()
+        val request = Request.Builder().url("${Constants.WS_URL}/$userId").build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 val message = Gson().fromJson(text, WebSocketMessage::class.java)

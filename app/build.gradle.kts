@@ -119,4 +119,7 @@ dependencies {
     //AndroidX Security (support EncryptedSharedPreferences with AES256 encryption)
     implementation ("androidx.security:security-crypto:1.1.0-alpha06")
 
+    //Them ICONS Material
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+
 }

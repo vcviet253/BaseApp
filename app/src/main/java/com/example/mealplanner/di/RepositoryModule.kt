@@ -1,4 +1,4 @@
-package com.example.mealplanner.data.di
+package com.example.mealplanner.di
 
 import com.example.mealplanner.data.repository.ChatRepositoryImpl
 import com.example.mealplanner.data.repository.LoginRepositoryImpl

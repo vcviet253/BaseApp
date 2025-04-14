@@ -1,28 +1,24 @@
 package com.example.mealplanner.presentation.chat
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mealplanner.common.UserSession
 import com.example.mealplanner.domain.model.Message
+import com.example.mealplanner.domain.model.MessageStatus
 import com.example.mealplanner.domain.repository.ChatRepository
 import com.example.mealplanner.domain.usecase.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.OkHttp
 import java.util.UUID
 import javax.inject.Inject
-import javax.inject.Named
 
 private const val TAG = "ChatViewModel"
 
@@ -38,43 +34,86 @@ class ChatViewModel @Inject constructor(
     val messages = _messages.asStateFlow()
 
     private var connectionJob: Job? = null
-    private var currentUserId: String? = null
+    private var observeJob: Job? = null
 
-    fun setUserId(newUserId: String) {
-        if (newUserId == currentUserId) return // Không làm gì nếu cùng user
-
-        disconnect() // Dừng kết nối cũ nếu có
-        currentUserId = newUserId
-        connect(newUserId)
+    init {
+        val userId = UserSession.userId
+        userId?.let {
+            _uiState.update { it.copy(currentUserId = userId) }
+            connect(userId)
+        }
     }
 
     fun connect(userId: String) {
         repository.connectWebSocket(userId)
 
-        repository.observeMessages().onEach { msg ->
-            val otherUser = if (msg.fromUser == currentUserId) msg.toUser else msg.fromUser
-            _messages.update { map ->
-                val currentList = map[otherUser].orEmpty()
-                map + (otherUser to (currentList + msg))
+        observeJob?.cancel()
+
+//        repository.observeMessages().onEach { msg ->
+//            val otherUser = if (msg.fromUser == currentUserId) msg.toUser else msg.fromUser
+//            _messages.update { map ->
+//                val currentList = map[otherUser].orEmpty()
+//                map + (otherUser to (currentList + msg))
+//            }
+//        }.launchIn(viewModelScope)
+
+        observeJob = repository.observeMessages().onEach { serverMsg ->
+            _uiState.update { state ->
+                val updatedMessages = state.messages.map { localMsg ->
+                    // Nếu là tin nhắn do chính mình gửi, có tempId, đang ở trạng thái SENDING và nội dung trùng
+                    if (
+                        localMsg.tempId != null &&
+                        localMsg.text == serverMsg.text &&
+                        localMsg.toUser == serverMsg.toUser &&
+                        localMsg.fromUser == serverMsg.fromUser &&
+                        localMsg.status == MessageStatus.SENDING
+                    ) {
+                        // Update lại từ message của server, giữ lại tempId để đồng bộ
+                        serverMsg.copy(tempId = localMsg.tempId, status = MessageStatus.SENT)
+                    } else {
+                        localMsg
+                    }
+                }
+
+                // Nếu không khớp tin nhắn nào, tức là tin nhắn mới → thêm vào
+                val isDuplicate = updatedMessages.any { it.serverId == serverMsg.serverId }
+
+                state.copy(
+                    messages = if (isDuplicate) updatedMessages else updatedMessages + serverMsg
+                )
             }
         }.launchIn(viewModelScope)
     }
 
     fun sendMessage(to: String, text: String, from: String) {
         val tempId = UUID.randomUUID().toString()
-        val messageRequest = Message(
+        val tempMessage = Message(
             serverId = null,
             tempId = tempId,
-            fromUser =  from,
+            fromUser = from,
             toUser = to,
             text = text,
-            timestamp = System.currentTimeMillis())
+            timestamp = System.currentTimeMillis()
+        )
+
+        _uiState.update { state -> state.copy(messages = state.messages + tempMessage) }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                sendMessageUseCase(messageRequest)
-            } catch(e: Exception) {
+
+
+                sendMessageUseCase(tempMessage)
+            } catch (e: Exception) {
                 Log.d(TAG, "Error when sending message: ${e.localizedMessage}")
+
+                // Cập nhật message sang FAILED
+                _uiState.update { state ->
+                    state.copy(
+                        messages = state.messages.map {
+                            if (it.tempId == tempId) it.copy(status = MessageStatus.FAILED) else it
+                        }
+                    )
+                }
             }
         }
     }
@@ -108,6 +147,8 @@ class ChatViewModel @Inject constructor(
         repository.disconnectWebSocket()
         connectionJob?.cancel()
         connectionJob = null
+        observeJob?.cancel()
+        observeJob = null
     }
 
     override fun onCleared() {

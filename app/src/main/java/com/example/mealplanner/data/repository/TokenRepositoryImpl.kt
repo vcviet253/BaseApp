@@ -2,16 +2,13 @@ package com.example.mealplanner.data.repository
 
 import android.content.SharedPreferences
 import androidx.compose.ui.input.key.Key
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import androidx.security.crypto.MasterKeys
+import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.domain.repository.TokenRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class TokenRepositoryImpl @Inject constructor(
-    @ApplicationContext context: ApplicationContext,
-    private val sharedPreferences: SharedPreferences
+    private val userPreferences: UserPreferences
 ): TokenRepository {
 
     companion object {
@@ -19,11 +16,10 @@ class TokenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveToken(token: String) {
-        sharedPreferences.edit().putString(KEY_TOKEN, token).apply()
+        userPreferences.saveToken(token)
     }
 
-
     override fun getToken(): String? {
-        return sharedPreferences.getString(KEY_TOKEN, null)
+        return userPreferences.getToken()
     }
 }
