@@ -202,14 +202,13 @@ fun MessageWithStatus(
         )
 
         // Trạng thái nằm bên ngoài bubble
-        if (isCurrentUser && (isLastMessageFromCurrentUser || isExpanded)) {
-            Spacer(modifier = Modifier.height(2.dp))
-
-            AnimatedVisibility(
-                visible = isExpanded, // Chỉ hiển thị khi mở rộng
-                enter = fadeIn(tween(durationMillis = 300)) + slideInVertically { it / 2 },
-                exit = fadeOut(tween(durationMillis = 300)) + slideOutVertically { it / 2 }
-            ) {
+        AnimatedVisibility(
+            visible = isExpanded, // Chỉ hiển thị khi mở rộng
+            enter = fadeIn(tween(durationMillis = 300)) + slideInVertically { it / 2 },
+            exit = fadeOut(tween(durationMillis = 300)) + slideOutVertically { it / 2 }
+        ) {
+            if (isCurrentUser && (isLastMessageFromCurrentUser || isExpanded)) {
+                Spacer(modifier = Modifier.height(2.dp))
                 MessageStatusBox(
                     status = message.status,
                     onRetry = onRetry
@@ -218,66 +217,3 @@ fun MessageWithStatus(
         }
     }
 }
-
-//// Nếu tin nhắn là tin nhắn cuối cùng và được mở rộng, hiển thị trạng thái gửi
-//if (isCurrentUser &&  (isLastMessageFromCurrentUser || isExpanded)) {
-//    Spacer(modifier = Modifier.height(4.dp))
-//    Row(
-//        modifier = Modifier
-//            .padding(top = 2.dp)
-//            .align(Alignment.BottomEnd), // căn phải với người gửi
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        when (message.status) {
-//            MessageStatus.SENDING -> {
-//                Text(
-//                    text = "Sending...",
-//                    style = MaterialTheme.typography.labelSmall,
-//                    color = Color.Gray
-//                )
-//                Spacer(modifier = Modifier.width(4.dp))
-//                Icon(
-//                    imageVector = Icons.Filled.Schedule,
-//                    contentDescription = "Sending",
-//                    tint = Color.Green,
-//                    modifier = Modifier.size(16.dp)
-//                )
-//            }
-//
-//            MessageStatus.SENT -> {
-//                Text(
-//                    text = "Sending...",
-//                    style = MaterialTheme.typography.labelSmall,
-//                    color = Color.Gray
-//                )
-//                Spacer(modifier = Modifier.width(4.dp))
-//                Icon(
-//                    imageVector = Icons.Default.CheckCircle,
-//                    contentDescription = "Sent",
-//                    tint = Color.Green,
-//                    modifier = Modifier.size(16.dp)
-//                )
-//            }
-//
-//            MessageStatus.FAILED -> {
-//                Text(
-//                    text = "Failed",
-//                    style = MaterialTheme.typography.labelSmall,
-//                    color = Color.Red
-//                )
-//                Spacer(modifier = Modifier.width(4.dp))
-//                IconButton(
-//                    onClick = { /* Thực hiện hành động retry gửi tin nhắn */ }
-//                ) {
-//                    Icon(
-//                        Icons.Default.Refresh,
-//                        contentDescription = "Retry",
-//                        modifier = Modifier.size(16.dp)
-//                    )
-//                }
-//            }
-//
-//            else -> Unit
-//        }
-//    }
-//}

@@ -62,7 +62,6 @@ class ChatViewModel @Inject constructor(
                 val updatedMessages = state.messages.map { localMsg ->
                     // Nếu là tin nhắn do chính mình gửi, có tempId, đang ở trạng thái SENDING và nội dung trùng
                     if (
-                        localMsg.tempId != null &&
                         localMsg.text == serverMsg.text &&
                         localMsg.toUser == serverMsg.toUser &&
                         localMsg.fromUser == serverMsg.fromUser &&
@@ -81,6 +80,7 @@ class ChatViewModel @Inject constructor(
                 state.copy(
                     messages = if (isDuplicate) updatedMessages else updatedMessages + serverMsg
                 )
+
             }
         }.launchIn(viewModelScope)
     }
@@ -97,11 +97,10 @@ class ChatViewModel @Inject constructor(
         )
 
         _uiState.update { state -> state.copy(messages = state.messages + tempMessage) }
+        toggleExpandedMessage(tempMessage.tempId)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-
-
                 sendMessageUseCase(tempMessage)
             } catch (e: Exception) {
                 Log.d(TAG, "Error when sending message: ${e.localizedMessage}")
@@ -116,6 +115,10 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun toggleExpandedMessage(messageId: String) {
+        _uiState.update { state -> state.copy(expandedMessageId = if (state.expandedMessageId == messageId) null else messageId)}
     }
 
 //    private fun connect(userId: String) {
