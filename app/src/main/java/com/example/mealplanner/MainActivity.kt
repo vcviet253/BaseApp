@@ -30,6 +30,7 @@ import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.presentation.CustomNavigation
 import com.example.mealplanner.presentation.chat.ChatScreen
 import com.example.mealplanner.presentation.common.GalaxyBackground
+import com.example.mealplanner.presentation.diary.DiaryScreen
 import com.example.mealplanner.presentation.home.HomeScreen
 import com.example.mealplanner.presentation.login.LoginScreen
 
@@ -47,8 +48,9 @@ class MainActivity : ComponentActivity() {
         println("MainActivity: onCreate")
 
         setContent {
-            val navController = rememberNavController()
-            CustomNavigation(navController)
+//            val navController = rememberNavController()
+//            CustomNavigation(navController)
+            DiaryScreen()
         }
     }
 }

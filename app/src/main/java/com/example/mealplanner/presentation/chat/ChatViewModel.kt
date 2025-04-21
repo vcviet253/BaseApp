@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.IOException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -102,7 +103,11 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 sendMessageUseCase(tempMessage)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
+                Log.d(TAG, "Network error: ${e.localizedMessage}")
+                // Cập nhật message sang FAILED
+            }
+            catch (e: Exception) {
                 Log.d(TAG, "Error when sending message: ${e.localizedMessage}")
 
                 // Cập nhật message sang FAILED

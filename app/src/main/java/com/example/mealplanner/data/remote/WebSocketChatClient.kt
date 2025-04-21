@@ -14,8 +14,10 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONObject
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class WebSocketChatClient @Inject constructor(
+@Singleton
+class WebSocketChatClient @Inject constructor (
     private val client: OkHttpClient
 ) {
     private var webSocket: WebSocket? = null
