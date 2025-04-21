@@ -97,11 +97,10 @@ class ChatViewModel @Inject constructor(
         )
 
         _uiState.update { state -> state.copy(messages = state.messages + tempMessage) }
+        toggleExpandedMessageId(tempMessage.tempId)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-
-
                 sendMessageUseCase(tempMessage)
             } catch (e: Exception) {
                 Log.d(TAG, "Error when sending message: ${e.localizedMessage}")
@@ -116,6 +115,10 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun toggleExpandedMessageId(messageId: String) {
+        _uiState.update { state -> state.copy(expandedMessageId =  if (state.expandedMessageId == messageId) null else messageId) }
     }
 
 //    private fun connect(userId: String) {

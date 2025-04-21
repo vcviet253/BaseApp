@@ -71,10 +71,11 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
                 ) {
                     itemsIndexed(state.messages.reversed()) { index, message ->
                         val isCurrentUser = message.fromUser == state.currentUserId
-                        val isLastMessageFromCurrentUser = isCurrentUser &&
-                                (index == 0 || state.messages.subList(0, index).none { it.fromUser == state.currentUserId })
+                        val isLastMessageFromCurrentUser = state.messages.lastOrNull()?.fromUser == state.currentUserId
+                        //val isLastMessageFromCurrentUser = state.messages.isNotEmpty() && state.messages.last().fromUser == state.currentUserId
 
-                        val isExpanded = message.tempId == expandedMessageId || message.serverId == expandedMessageId
+                        //Kiem tra xem tin nhan co dang mo rong khong
+                        val isExpanded = message.tempId == state.expandedMessageId
 
                         MessageWithStatus(
                             message = message,
@@ -83,7 +84,8 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
                             isExpanded = isExpanded,
                             onRetry = { },
                             onClick = {
-                                expandedMessageId = if (isExpanded) null else (message.tempId ?: message.serverId)
+                                viewModel.toggleExpandedMessageId(message.tempId)
+
                             }
                         )
                     }
