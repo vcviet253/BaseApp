@@ -33,6 +33,8 @@ import com.example.mealplanner.presentation.common.GalaxyBackground
 import com.example.mealplanner.presentation.diary.DiaryScreen
 import com.example.mealplanner.presentation.home.HomeScreen
 import com.example.mealplanner.presentation.login.LoginScreen
+import com.example.mealplanner.presentation.sharedcomponents.GlowingEffectButton
+import com.example.mealplanner.presentation.sharedcomponents.ShinyMovingLightButton
 
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +52,20 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            val navController = rememberNavController()
 //            CustomNavigation(navController)
-            DiaryScreen()
+           // DiaryScreen()
+            Column() {
+
+                GlowingEffectButton(
+                    onClick = { },
+                    modifier = Modifier
+                )
+
+                ShinyMovingLightButton(
+                    text = "Shiny",
+                    onClick = { },
+                    modifier = Modifier
+                )
+            }
         }
     }
 }

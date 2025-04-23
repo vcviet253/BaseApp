@@ -44,6 +44,7 @@ class ChatViewModel @Inject constructor(
             connect(userId)
         }
     }
+    
 
     fun connect(userId: String) {
         repository.connectWebSocket(userId)
