@@ -39,6 +39,8 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
     val messages by viewModel.messages.collectAsState()
     var toUser by remember { mutableStateOf("user456") }
     var text by remember { mutableStateOf("") }
+    var expandedMessageId by remember { mutableStateOf<String?>(null) }
+
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -51,6 +53,8 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
 //                    Text("${msg.timestamp} From ${msg.fromUser} to ${msg.toUser} : ${msg.text} ")
 //                }
 //            }
+
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,10 +70,7 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
                     contentPadding = PaddingValues(vertical = 8.dp),
                 ) {
                     itemsIndexed(state.messages.reversed()) { index, message ->
-                        //Kiem tra xem tin nhan co den tu user hien tai
                         val isCurrentUser = message.fromUser == state.currentUserId
-
-                        //Kiem tra xem co phai tin nhan cuoi va tu user khong
                         val isLastMessageFromCurrentUser = state.messages.lastOrNull()?.fromUser == state.currentUserId
                         //val isLastMessageFromCurrentUser = state.messages.isNotEmpty() && state.messages.last().fromUser == state.currentUserId
 
@@ -83,7 +84,8 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
                             isExpanded = isExpanded,
                             onRetry = { },
                             onClick = {
-                                viewModel.toggleExpandedMessage(message.tempId)
+                                viewModel.toggleExpandedMessageId(message.tempId)
+
                             }
                         )
                     }

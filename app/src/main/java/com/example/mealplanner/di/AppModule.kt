@@ -19,6 +19,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -62,14 +63,7 @@ object AppModule {
         return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL).create(ChatApi::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideGeminiRepository(
-        api: GeminiApi,
-        @Named("gemini_api_key") apiKey: String
-    ): GeminiRepository {
-        return GeminiRepositoryImpl(api, apiKey)
-    }
+
 
     //Gemini API Key
     @Provides
@@ -80,15 +74,13 @@ object AppModule {
 
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().build()
+        return OkHttpClient.Builder()
+            .connectTimeout(7, TimeUnit.SECONDS)   // Timeout kết nối
+            .writeTimeout(7, TimeUnit.SECONDS)     // Timeout gửi data lên
+            .readTimeout(7, TimeUnit.SECONDS)      // Timeout nhận data về
+            .build()
     }
 
-    @Provides
-    fun provideWebSocketChatClient(
-        okHttpClient: OkHttpClient
-    ): WebSocketChatClient {
-        return WebSocketChatClient(okHttpClient)
-    }
 
     //UserID
     @Provides

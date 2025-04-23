@@ -1,6 +1,8 @@
 package com.example.mealplanner.presentation.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -126,7 +128,7 @@ fun MessageStatusBox(
             when (status) {
                 MessageStatus.SENDING -> {
                     Text(
-                        text = "Sending...",
+                        text = "Sending",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Gray
                     )
@@ -201,12 +203,16 @@ fun MessageWithStatus(
             onClick = onClick
         )
 
-        // Trạng thái nằm bên ngoài bubble
         AnimatedVisibility(
             visible = isExpanded, // Chỉ hiển thị khi mở rộng
-            enter = fadeIn(tween(durationMillis = 300)) + slideInVertically { it / 2 },
-            exit = fadeOut(tween(durationMillis = 300)) + slideOutVertically { it / 2 }
+            enter = slideInVertically(
+                animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+            ) { it / 2 },
+            exit = slideOutVertically(
+                animationSpec = tween(durationMillis = 50) // Almost instant exit
+            ) { it / 2 }
         ) {
+            // Trạng thái nằm bên ngoài bubble
             if (isCurrentUser && (isLastMessageFromCurrentUser || isExpanded)) {
                 Spacer(modifier = Modifier.height(2.dp))
                 MessageStatusBox(

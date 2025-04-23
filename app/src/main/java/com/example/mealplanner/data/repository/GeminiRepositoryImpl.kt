@@ -10,9 +10,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
-class GeminiRepositoryImpl @Inject constructor(private val api: GeminiApi,
-                                               @Named("gemini_api_key") private val apiKey: String) : GeminiRepository {
+@Singleton
+class GeminiRepositoryImpl @Inject constructor(
+    private val api: GeminiApi,
+    @Named("gemini_api_key") private val apiKey: String
+) : GeminiRepository {
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun generateDiaryFromContent(contents: List<GeminiContent>): String {
         val request = buildGeminiRequest(contents)
