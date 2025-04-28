@@ -2,8 +2,6 @@ package com.example.mealplanner.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.example.mealplanner.common.Constants
 import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.data.remote.AuthApi

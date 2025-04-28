@@ -20,25 +20,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.mealplanner.common.UserSession
-import com.example.mealplanner.data.preferences.UserPreferences
-import com.example.mealplanner.presentation.CustomNavigation
-import com.example.mealplanner.presentation.chat.ChatScreen
 import com.example.mealplanner.presentation.common.GalaxyBackground
-import com.example.mealplanner.presentation.diary.DiaryScreen
-import com.example.mealplanner.presentation.home.HomeScreen
-import com.example.mealplanner.presentation.login.LoginScreen
-import com.example.mealplanner.presentation.sharedcomponents.GlowingEffectButton
-import com.example.mealplanner.presentation.sharedcomponents.ShinyMovingLightButton
 
+import com.example.mealplanner.presentation.record.RecordTranscriptScreen
+import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 const val TAG = "MainActivity"
 
@@ -50,25 +37,11 @@ class MainActivity : ComponentActivity() {
         println("MainActivity: onCreate")
 
         setContent {
-//            val navController = rememberNavController()
-//            CustomNavigation(navController)
-           // DiaryScreen()
-            Column() {
-
-                GlowingEffectButton(
-                    onClick = { },
-                    modifier = Modifier
-                )
-
-                ShinyMovingLightButton(
-                    text = "Shiny",
-                    onClick = { },
-                    modifier = Modifier
-                )
-            }
+            SampleAnswersScreen()
         }
     }
 }
+
 
 @Preview
 @Composable

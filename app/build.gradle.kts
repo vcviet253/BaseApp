@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.camera.video)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -116,10 +117,12 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.34.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0") // optional for page indicators
 
-    //AndroidX Security (support EncryptedSharedPreferences with AES256 encryption)
-    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
+    //Media recording and playback
+    implementation("androidx.media3:media3-exoplayer:1.3.0")
+    implementation("androidx.media3:media3-session:1.3.0")
 
-    //Them ICONS Material
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    //More icons
+    implementation("androidx.compose.material:material-icons-extended:1.4.0")
+
 
 }

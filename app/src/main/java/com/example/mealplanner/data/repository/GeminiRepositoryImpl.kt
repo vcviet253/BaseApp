@@ -37,4 +37,18 @@ class GeminiRepositoryImpl @Inject constructor(
             ?: throw Exception("Empty response")
     }
 
+    override suspend fun getModelAnswerForQuestionAndBand(prompt: String): String {
+
+        // Build the Gemini request with the text prompt
+        val requestBody = buildGeminiRequest(prompt)
+
+        // Call Gemini API and get the response (replace with actual network request)
+        val response = api.generateContent(apiKey = apiKey, body = requestBody)
+
+        // Assuming the API response contains the answer text (update with your actual response model)
+        return response.candidates.firstOrNull()
+            ?.content?.parts?.firstOrNull()?.text
+            ?: throw Exception("Empty response") // This will depend on how the Gemini API returns the answer
+    }
+
 }

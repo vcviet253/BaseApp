@@ -9,7 +9,6 @@ sealed class GeminiContent {
     data class Text(val text: String) : GeminiContent()
 }
 
-
 fun buildGeminiRequest(contents: List<GeminiContent>): GeminiRequestBody {
     val partItems = contents.map {
         when (it) {
@@ -27,7 +26,6 @@ fun buildGeminiRequest(contents: List<GeminiContent>): GeminiRequestBody {
                 )
                 println(">> Created image part: ${Gson().toJson(part)}")
                 part
-
             }
         }
 
@@ -35,5 +33,15 @@ fun buildGeminiRequest(contents: List<GeminiContent>): GeminiRequestBody {
 
     return GeminiRequestBody(
         contents = listOf(GeminiContentPart(parts = partItems))
+    )
+}
+
+fun buildGeminiRequest(prompt: String): GeminiRequestBody {
+    // Create a GeminiPartItem with just the prompt text
+    val promptPart = GeminiPartItem(text = prompt)
+
+    // Return the request body containing the prompt
+    return GeminiRequestBody(
+        contents = listOf(GeminiContentPart(parts = listOf(promptPart))) // Only pass the text part
     )
 }
