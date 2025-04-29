@@ -20,10 +20,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mealplanner.presentation.listening_map.MapLabelingScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.mealplanner.presentation.maplabeling.MapLabelingScreen
+import com.example.mealplanner.presentation.navigation.AppNavigation
 
 import com.example.mealplanner.presentation.record.RecordTranscriptScreen
 import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
+import com.example.mealplanner.presentation.testlist.TestListScreen
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,7 +40,8 @@ class MainActivity : ComponentActivity() {
         println("MainActivity: onCreate")
 
         setContent {
-            MapLabelingScreen()
+            val navController = rememberNavController()
+            AppNavigation(navController)
         }
     }
 }

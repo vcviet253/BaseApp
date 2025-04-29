@@ -3,7 +3,9 @@ package com.example.mealplanner.core.di
 import com.example.mealplanner.data.repository.ChatRepositoryImpl
 import com.example.mealplanner.data.repository.GeminiRepositoryImpl
 import com.example.mealplanner.data.repository.LoginRepositoryImpl
+import com.example.mealplanner.data.repository.MapLabelingRepositoryImpl
 import com.example.mealplanner.data.repository.TokenRepositoryImpl
+import com.example.mealplanner.domain.maplabeling.repository.MapLabelingRepository
 import com.example.mealplanner.domain.repository.ChatRepository
 import com.example.mealplanner.domain.repository.GeminiRepository
 import com.example.mealplanner.domain.repository.LoginRepository
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindGeminiRepository(
         geminiRepositoryImpl: GeminiRepositoryImpl
     ): GeminiRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMapLabelingRepository (
+        mapLabelingRepositoryImpl: MapLabelingRepositoryImpl
+    ): MapLabelingRepository
 }

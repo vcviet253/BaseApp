@@ -10,6 +10,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.04.01"
 securityCryptoKtx = "1.0.0"
 cameraVideo = "1.4.2"
+coreAnimation = "1.0.0"
 
 
 [libraries]
@@ -29,6 +30,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
 androidx-camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraVideo" }
+androidx-core-animation = { group = "androidx.core", name = "core-animation", version.ref = "coreAnimation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
