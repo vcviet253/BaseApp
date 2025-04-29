@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.mealplanner.presentation.chat.components.MessageBubble
 import com.example.mealplanner.presentation.chat.components.MessageWithStatus
-import com.example.mealplanner.presentation.common.GalaxyBackground
 
 @Composable
 fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hiltViewModel()) {
@@ -60,7 +59,6 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = hilt
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                GalaxyBackground()
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()

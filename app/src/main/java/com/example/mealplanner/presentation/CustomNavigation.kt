@@ -56,7 +56,7 @@ fun CustomNavigation(navController: NavHostController) {
             SplashScreen()
         }
         composable(Constants.LOGIN_ROUTE) { LoginScreen(navController) }
-        composable("chat") { ChatScreen(navController) }
-        composable("home") { HomeScreen(navController) }
+        composable(Constants.CHAT_ROUTE) { ChatScreen(navController) }
+        composable(Constants.HOME_ROUTE) { HomeScreen(navController) }
     }
 }

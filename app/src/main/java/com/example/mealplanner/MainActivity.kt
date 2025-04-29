@@ -20,7 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mealplanner.presentation.common.GalaxyBackground
+import com.example.mealplanner.presentation.listening_map.MapLabelingScreen
 
 import com.example.mealplanner.presentation.record.RecordTranscriptScreen
 import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         println("MainActivity: onCreate")
 
         setContent {
-            SampleAnswersScreen()
+            MapLabelingScreen()
         }
     }
 }
@@ -48,7 +48,6 @@ class MainActivity : ComponentActivity() {
 fun PreviewBackground() {
     MealPlannerTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            GalaxyBackground()
         }
     }
 }
