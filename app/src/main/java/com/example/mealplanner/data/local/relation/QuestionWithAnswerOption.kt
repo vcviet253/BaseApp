@@ -12,8 +12,9 @@ data class QuestionWithAnswerOption(
     @Embedded val question: QuestionEntity,
 
     @Relation(
+        // entity = AnswerOptionEntity::class, // Optional but good for clarity
         parentColumn = "id",
-        entityColumn = "id"
+        entityColumn = "questionId"
     )
 
     //For Map Labeling, we only have one answer option per question ( list contains only 1 element)

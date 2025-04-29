@@ -15,7 +15,7 @@ data class TestAndQuestions(
     @Relation(
         entity = QuestionEntity::class,  // Need to specify intermediate entity for nested relation
         parentColumn = "id",
-        entityColumn = "id",
+        entityColumn = "testId",
     )
 
     // This list contains Questions, each bundled with its (single) correct AnswerOption

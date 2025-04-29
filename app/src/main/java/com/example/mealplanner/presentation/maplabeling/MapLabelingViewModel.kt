@@ -120,6 +120,7 @@ class MapLabelingViewModel @Inject constructor(
                                     testTitle = testData.testInfo.title,
                                     imageUrl = testData.testInfo.imageUrl,
                                     totalQuestions = totalQuestions,
+                                    questionList = testData.questions,
                                     answerPool = testData.testInfo.answerPool,
                                     currentQuestionNumber = currentQuestionNumber,
                                     selectedAnswerForCurrentQuestion = userAnswers[currentQuestionNumber], // Load saved answer if any

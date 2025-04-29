@@ -58,8 +58,11 @@ import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mealplanner.core.audio.AudioPlayerState
+import com.example.mealplanner.domain.maplabeling.model.Question
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+
+private const val TAG = "MapLabelingScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,9 +89,9 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
         // Nội dung bên trong Bottom Sheet
         sheetContent = {
             AnswerOptionsGrid(
+                questionList = state.questionList,   //Truyen danh sach cac cau hoi cua bai tap hien tai
                 // 1. Truyền danh sách đáp án từ state
                 answerPool = state.answerPool,
-
                 // 2. Truyền hàm callback khi đáp án được click
                 // Dùng tham chiếu hàm viewModel::onAnswerSelected
                 // Vì hàm onAnswerSelected(label: String) trong ViewModel
@@ -409,11 +412,23 @@ fun AudioPlayerControls(
 
 @Composable
 fun AnswerOptionsGrid(
+    questionList: List<Question>,
     answerPool: List<String>,
     onAnswerClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(16.dp)) {
+        questionList.forEach() { question ->
+            // Hiển thị câu hỏi
+            Text(
+                text = question.prompt ?: "Câu hỏi không có nội dung",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Log.d(TAG, questionList.size.toString())
+        }
+
         Text("Chọn đáp án:", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(16.dp)) // Tăng khoảng cách
         LazyVerticalGrid(

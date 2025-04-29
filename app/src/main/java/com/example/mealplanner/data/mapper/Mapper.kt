@@ -1,5 +1,6 @@
 package com.example.mealplanner.data.mapper
 
+import android.util.Log
 import com.example.mealplanner.data.local.relation.QuestionWithAnswerOption
 import com.example.mealplanner.data.local.relation.TestAndQuestions
 import com.example.mealplanner.domain.maplabeling.model.MapLabelingTestData
@@ -9,8 +10,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
-// Sử dụng extension functions cho tiện lợi
+private const val TAG = "Mapper"
 
+// Sử dụng extension functions cho tiện lợi
 fun TestAndQuestions.toDomainModel(): MapLabelingTestData? {
     // Chỉ map nếu test và questions không null
     val testEntity = this.test
@@ -32,6 +34,8 @@ fun TestAndQuestions.toDomainModel(): MapLabelingTestData? {
 
     // Map List<QuestionWithAnswerOption> sang List<QuestionInfo>
     val questionsInfo = questionsWithOptions.mapNotNull { it.toDomainModel() }
+
+    Log.d(TAG, "MapLabelingTestData questions size = ${questionsInfo.size}")
 
     // Chỉ trả về TestData nếu có đủ thông tin cần thiết
     if (questionsInfo.isNotEmpty()) { // Cần ít nhất 1 câu hỏi
