@@ -1,7 +1,7 @@
 package com.example.mealplanner.domain.usecase
 
-import com.example.mealplanner.common.Resource
-import com.example.mealplanner.common.UserSession
+import com.example.mealplanner.core.common.Resource
+import com.example.mealplanner.core.common.UserSession
 import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.domain.repository.LoginRepository
 import kotlinx.coroutines.flow.Flow

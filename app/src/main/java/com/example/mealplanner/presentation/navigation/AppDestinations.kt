@@ -6,4 +6,6 @@ object AppDestinations {
     const val MAP_LABELING_ARG_TEST_ID = "testId"
     // Route definition for MapLabelingScreen expecting a testId argument
     const val MAP_LABELING_FULL_ROUTE = "$MAP_LABELING_ROUTE/{$MAP_LABELING_ARG_TEST_ID}"
+
+    const val SAMPLE_ANSWER_SPEAKING_ROUTE = "sampleAnswerSpeaking"
 }

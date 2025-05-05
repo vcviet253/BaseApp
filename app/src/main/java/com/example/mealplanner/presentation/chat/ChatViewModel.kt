@@ -3,7 +3,7 @@ package com.example.mealplanner.presentation.chat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mealplanner.common.UserSession
+import com.example.mealplanner.core.common.UserSession
 import com.example.mealplanner.domain.model.Message
 import com.example.mealplanner.domain.model.MessageStatus
 import com.example.mealplanner.domain.repository.ChatRepository

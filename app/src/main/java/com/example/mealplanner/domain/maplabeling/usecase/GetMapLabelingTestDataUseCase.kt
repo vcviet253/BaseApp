@@ -1,6 +1,6 @@
 package com.example.mealplanner.domain.maplabeling.usecase
 
-import com.example.mealplanner.common.Resource
+import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.domain.maplabeling.model.MapLabelingTestData
 import com.example.mealplanner.domain.maplabeling.repository.MapLabelingRepository
 import kotlinx.coroutines.flow.Flow

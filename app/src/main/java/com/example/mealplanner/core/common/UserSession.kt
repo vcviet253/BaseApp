@@ -1,4 +1,4 @@
-package com.example.mealplanner.common
+package com.example.mealplanner.core.common
 
 import com.example.mealplanner.data.preferences.UserPreferences
 

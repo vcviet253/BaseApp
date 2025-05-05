@@ -7,7 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mealplanner.R
-import com.example.mealplanner.common.Resource
+import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.core.audio.AudioPlayerState
 import com.example.mealplanner.domain.audioplayback.ObserveAudioProgressUseCase
 import com.example.mealplanner.domain.audioplayback.ObserveAudioStateUseCase
@@ -123,7 +123,6 @@ class MapLabelingViewModel @Inject constructor(
                                     questionList = testData.questions,
                                     answerPool = testData.testInfo.answerPool,
                                     currentQuestionNumber = currentQuestionNumber,
-                                    selectedAnswerForCurrentQuestion = userAnswers[currentQuestionNumber], // Load saved answer if any
                                     canGoPrevious = false, // Can't go back from first question
                                     canGoNext = totalQuestions > 1, // Can go next if more than 1 question
                                     errorMessage = null
@@ -152,12 +151,20 @@ class MapLabelingViewModel @Inject constructor(
         }
     }
 
-    fun onAnswerSelected(answerLabel: String) {
+    fun onAnswerSelected(questionNumber: Int, answerLabel: String) {
         val currentQuestionNum = _uiState.value.currentQuestionNumber
         userAnswers[currentQuestionNum] = answerLabel // Store answer temporarily
-        _uiState.update { it.copy(selectedAnswerForCurrentQuestion = answerLabel) }
-        // Optionally call a use case to save progress persistently
-        // viewModelScope.launch { saveAnswerUseCase(...) }
+        _uiState.update { currentState ->
+            val updatedAnswers = currentState.userAnswers.toMutableMap().apply {
+                this[questionNumber] = answerLabel
+            }
+            currentState.copy(
+                userAnswers = updatedAnswers
+                // Không cần selectedAnswerForCurrentQuestion hay activeQuestionNumberForSelection nữa
+            )
+        }
+
+
     }
 
     // Các hàm điều khiển audio gọi Use Cases tương ứng

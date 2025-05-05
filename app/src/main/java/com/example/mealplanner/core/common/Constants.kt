@@ -1,4 +1,4 @@
-package com.example.mealplanner.common
+package com.example.mealplanner.core.common
 
 object Constants {
     const val PARAM_MEAL_NAME = "mealName"

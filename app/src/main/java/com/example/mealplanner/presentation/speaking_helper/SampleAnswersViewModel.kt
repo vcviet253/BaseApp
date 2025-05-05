@@ -46,26 +46,40 @@ class SampleAnswersViewModel @Inject constructor(
             selectedTopic = topic
         )
         fetchRandomQuestion()
+        println("fetching")
+    }
+
+    fun selectPart(part: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedPart = part
+        )
+        fetchRandomQuestion()
+        println("fetching")
     }
 
     fun fetchRandomQuestion() {
-        // Fetch a random question based on the selected topic
+        if (_uiState.value.selectedTopic.isNullOrEmpty() || _uiState.value.selectedPart.isNullOrEmpty()
+            || (_uiState.value.selectedBand == null)
+        ) {
+           return
+        }
         _uiState.value = _uiState.value.copy(
             questionText = "Do you like your job?"
         )
+        println("fetching")
     }
 
     fun selectBand(band: Float) {
         _uiState.value = _uiState.value.copy(
             selectedBand = band
         )
-
+        fetchRandomQuestion()
+        println("fetching")
     }
 
-    fun fetchModelAnswer(question: String, band: Float) {
-
+    fun fetchModelAnswer(question: String, band: Float,part : String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val prompt = buildPrompt(question, band)
+            val prompt = buildPrompt(question, band, part)
             // Fetch the model answer for the selected topic and target band
 
             _uiState.update { it.copy(isLoading = true) }
@@ -93,8 +107,8 @@ class SampleAnswersViewModel @Inject constructor(
     }
 
     // Helper function to build the prompt
-    private fun buildPrompt(question: String, band: Float): String {
-        return "You are an IELTS examiner. You will now ask the candidate a question from Part 1 of the IELTS Speaking test. The question is about the candidate's daily routine.\n" +
+    private fun buildPrompt(question: String, band: Float, part: String): String {
+        return "You are an IELTS examiner. You will now ask the candidate a question from ${part} of the IELTS Speaking test.\n" +
                 "\n" +
                 "Question: \"${question}\"\n" +
                 "\n" +
@@ -123,6 +137,13 @@ class SampleAnswersViewModel @Inject constructor(
             state.copy(
                 isBandMenuExpanded = !state.isBandMenuExpanded
             )
-        }    }
+        }
+    }
+
+    fun updatePartMenuExpanded() {
+        _uiState.update { state ->
+            state.copy(isPartMenuExpanded = !state.isPartMenuExpanded)
+        }
+    }
 }
 

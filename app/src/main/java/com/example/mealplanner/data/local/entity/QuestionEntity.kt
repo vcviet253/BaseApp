@@ -19,7 +19,7 @@ data class QuestionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val testId: Long,
     val questionNumber: Int, // The number associated with the question (e.g., 1, 2, 3)
-    val prompt: String?,  // Optional text prompt (might be null for map labeling)
+    val prompt: String?,  // Optional text prompt (might be null for map labeling) or display template for fill-in-the-blank
     // Optional: Specific audio timings for this question within the main audio
     val audioStartTimeMs: Long?,
     val audioEndTimeMs: Long?,

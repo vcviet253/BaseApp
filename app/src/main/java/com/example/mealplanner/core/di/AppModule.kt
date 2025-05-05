@@ -2,7 +2,7 @@ package com.example.mealplanner.core.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.mealplanner.common.Constants
+import com.example.mealplanner.core.common.Constants
 import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.data.remote.AuthApi
 import com.example.mealplanner.data.remote.ChatApi

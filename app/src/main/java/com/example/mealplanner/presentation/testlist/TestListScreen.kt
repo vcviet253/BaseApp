@@ -19,7 +19,14 @@ fun TestListScreen(navController: NavController, testId: Long = 1L) {
             navController.navigate("${AppDestinations.MAP_LABELING_ROUTE}/$testId")
             println("Navigating to map labeling with testId: $testId") // Debug log
         }) {
-            Text("To test")
+            Text("Map labeling test")
+        }
+
+        Button(onClick =  {
+            navController.navigate(AppDestinations.SAMPLE_ANSWER_SPEAKING_ROUTE)
+            println("Navigating to sample answer speaking") // Debug log
+        }) {
+            Text("Sample answer speaking")
         }
     }
 }

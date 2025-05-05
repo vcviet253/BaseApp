@@ -1,5 +1,6 @@
 package com.example.mealplanner.presentation.maplabeling
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -17,20 +18,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Expand
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -40,30 +46,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.times
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mealplanner.core.audio.AudioPlayerState
 import com.example.mealplanner.domain.maplabeling.model.Question
+import com.example.mealplanner.presentation.maplabeling.components.FullScreenPhoto
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 private const val TAG = "MapLabelingScreen"
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
@@ -72,8 +82,9 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
     // State cho BottomSheetScaffold
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    // Coroutine scope để điều khiển bottom sheet
-    val scope = rememberCoroutineScope()
+    var fullScreenActive by remember { mutableStateOf(false) }
+    val scrim = remember(fullScreenActive) { FocusRequester() }
+
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -96,8 +107,8 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
                 // Dùng tham chiếu hàm viewModel::onAnswerSelected
                 // Vì hàm onAnswerSelected(label: String) trong ViewModel
                 // có signature khớp với (String) -> Unit mà onAnswerClick yêu cầu.
-                onAnswerClick = viewModel::onAnswerSelected
-
+                onAnswerSelected = viewModel::onAnswerSelected,
+                currentAnswers = state.userAnswers,
                 // modifier = Modifier... // Có thể thêm Modifier nếu cần
             )
         }
@@ -106,7 +117,8 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding) // Padding từ scaffold (quan trọng)
-                .padding(horizontal = 16.dp, vertical = 8.dp) // Padding riêng
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)// Padding riêng
         ) {
             // --- Tiêu đề Test ---
             Text(
@@ -114,25 +126,24 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             // --- Khu vực hiển thị Ảnh Map ---
             MapImageView(
                 imageUrl = "https://th.bing.com/th/id/R.201f06fa3bf4d8e07d8f07951ec841a8?rik=DDq25UQfStmz1g&riu=http%3a%2f%2fst.ebomb.edu.vn%2fsrc%2fielts-fighter%2f2019%2f05%2fbai-hoc-listening%2fbai-tap-map-labelling-1.jpeg&ehk=JkgA5Km53F2Rm61DmORj8rpIOQBSvcJ%2bJXO8iN4DpsE%3d&risl=&pid=ImgRaw&r=0",
+                onExpandButtonClick = { fullScreenActive = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f) // Cho phép ảnh chiếm không gian còn lại theo chiều dọc
                     .background(Color.Gray.copy(alpha = 0.1f)) // Nền tạm thời
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
             // --- Hiển thị câu hỏi hiện tại ---
-            Text(
-                text = "Câu ${state.currentQuestionNumber} / ${state.totalQuestions}: ${state.selectedAnswerForCurrentQuestion ?: "___"}",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+//            Text(
+//                text = "Câu ${state.currentQuestionNumber} / ${state.totalQuestions}",
+//                style = MaterialTheme.typography.titleLarge,
+//                modifier = Modifier.align(Alignment.CenterHorizontally)
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
 
             // --- Điều khiển Audio Player ---
             AudioPlayerControls(
@@ -142,7 +153,6 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
                 onSeek = viewModel::seekAudio, // Có thể cần onValueChangeFinished
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp)) // Khoảng trống trước khi chạm đáy
 
             // (Tùy chọn) Nút để mở rộng sheet thủ công nếu cần
             // Button(
@@ -151,11 +161,23 @@ fun MapLabelingScreen(viewModel: MapLabelingViewModel = hiltViewModel()) {
             // ) { Text("Hiển thị đáp án") }
         }
     }
+
+    if (fullScreenActive) {
+        FullScreenPhoto(
+            "https://th.bing.com/th/id/R.201f06fa3bf4d8e07d8f07951ec841a8?rik=DDq25UQfStmz1g&riu=http%3a%2f%2fst.ebomb.edu.vn%2fsrc%2fielts-fighter%2f2019%2f05%2fbai-hoc-listening%2fbai-tap-map-labelling-1.jpeg&ehk=JkgA5Km53F2Rm61DmORj8rpIOQBSvcJ%2bJXO8iN4DpsE%3d&risl=&pid=ImgRaw&r=0",
+            onDismiss = { fullScreenActive = false },
+            modifier = Modifier.focusRequester(scrim)
+        )
+    }
 }
 
 // --- Các Composable thành phần ---
 @Composable
-fun MapImageView(imageUrl: String?, modifier: Modifier = Modifier) {
+fun MapImageView(
+    imageUrl: String?,
+    onExpandButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     // Use Animatable for smooth transitions on scale and offset
     val scale = remember { Animatable(1f) }
     val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
@@ -352,15 +374,14 @@ fun MapImageView(imageUrl: String?, modifier: Modifier = Modifier) {
                 .padding(horizontal = 6.dp, vertical = 4.dp) // Padding inside the background
         )
 
-        // Ghi chú tạm thời
-//        Text(
-//            text = "TODO: Implement Zoom/Pan",
-//            color = MaterialTheme.colorScheme.error,
-//            modifier = Modifier
-//                .align(Alignment.BottomCenter)
-//                .padding(4.dp)
-//                .background(Color.Black.copy(alpha = 0.5f))
-//        )
+        IconButton(onClick = { onExpandButtonClick() },
+            modifier = Modifier.align(Alignment.TopEnd)) {
+            Icon(
+                imageVector = Icons.Filled.Expand,
+                contentDescription = "Expand"
+            )
+        }
+
     }
 }
 
@@ -410,47 +431,99 @@ fun AudioPlayerControls(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnswerOptionsGrid(
     questionList: List<Question>,
     answerPool: List<String>,
-    onAnswerClick: (String) -> Unit,
+    currentAnswers: Map<Int, String>,  // Map câu trả lời hiện tại từ UiState
+    onAnswerSelected: (questionNumber: Int, answer: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        questionList.forEach() { question ->
-            // Hiển thị câu hỏi
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        item { // Có thể thêm tiêu đề nếu muốn
             Text(
-                text = question.prompt ?: "Câu hỏi không có nội dung",
+                "Trả lời các câu hỏi:",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp) // Khoảng cách dưới tiêu đề
             )
-
-            Log.d(TAG, questionList.size.toString())
         }
 
-        Text("Chọn đáp án:", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(16.dp)) // Tăng khoảng cách
-        LazyVerticalGrid(
-            // Số cột tự điều chỉnh, chiều rộng tối thiểu cho mỗi ô
-            columns = GridCells.Adaptive(minSize = 64.dp),
-            // Khoảng cách giữa các ô
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            // Thêm padding để lưới không bị sát mép bottom sheet
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(answerPool, key = { it }) { label -> // Dùng label làm key
-                Button(
-                    onClick = { onAnswerClick(label) },
-                    // Kích thước cố định hoặc dùng aspect ratio
-                    modifier = Modifier.size(60.dp),
-                    // Căn chỉnh text vào giữa nút
-                    contentPadding = PaddingValues(0.dp)
+
+        items(
+            items = questionList,
+            key = { question -> question.number } // Dùng question.number làm key ổn định
+        ) { question -> // question ở đây là một QuestionInfo
+            // Quản lý trạng thái expanded của dropdown cho riêng dòng này
+            var expanded by rememberSaveable { mutableStateOf(false) }
+            // Lấy câu trả lời hiện tại cho câu hỏi này từ Map được truyền vào
+            val currentSelection = currentAnswers[question.number]
+
+            // --- Hiển thị một dòng: Số câu hỏi + Dropdown ---
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp) // Khoảng cách giữa số thứ tự và dropdown
+            ) {
+                // 1. Hiển thị số thứ tự câu hỏi
+                Text(
+                    text = "${question.number}. ${question.prompt ?: ""}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                // 2. Dropdown chọn đáp án
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier.width(100.dp) // Hoặc .weight(1f) để chiếm hết phần còn lại
                 ) {
-                    Text(text = label, fontSize = 20.sp) // Tăng cỡ chữ
+                    OutlinedTextField(
+                        value = currentSelection ?: "---",
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = { Text("Chọn") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+
+
+                    // Phần menu xổ xuống
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false } // Đóng menu khi bấm ra ngoài
+                    ) {
+                        answerPool.forEach { answerOption -> // Lặp qua các đáp án A, B, C...
+                            DropdownMenuItem(
+                                text = {
+                                    // Căn giữa Text trong MenuItem
+                                    Text(
+                                        text = answerOption,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                },
+                                onClick = {
+                                    // Khi người dùng chọn một đáp án trong menu:
+                                    // 1. Gọi callback truyền lên ViewModel với SỐ CÂU HỎI và ĐÁP ÁN đã chọn
+                                    onAnswerSelected(question.number, answerOption)
+                                    // 2. Đóng menu lại
+                                    expanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
                 }
+
+                // 3. (Tùy chọn) Hiển thị prompt của câu hỏi nếu cần
+                // Text(text = question.prompt ?: "", modifier = Modifier.weight(1f))
             }
         }
     }
 }
+

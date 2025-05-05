@@ -11,7 +11,8 @@ data class MapLabelingUiState(
     val currentQuestionNumber: Int = 1, // Câu hỏi đang hiển thị
     val totalQuestions: Int = 0, // Tổng số câu hỏi
     val questionList: List<Question> =  emptyList(), // Danh sách các câu hỏi
-    val selectedAnswerForCurrentQuestion: String? = null, // Đáp án người dùng chọn cho câu hiện tại (A, B, C...)
+    val  userAnswers: MutableMap<Int, String> =
+        mutableMapOf(), // Danh sách các đáp án người dùng đã chọn cho tất cả các câu hỏi
     val answerPool: List<String> = emptyList(), // Danh sách các đáp án có thể chọn (A, B, C...)
     val audioState: AudioPlayerState = AudioPlayerState.IDLE, // Trạng thái của audio player
     val audioProgress: Float = 0f, // Tiến trình audio (0.0f - 1.0f)

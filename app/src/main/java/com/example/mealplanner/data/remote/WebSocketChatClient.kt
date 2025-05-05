@@ -1,6 +1,6 @@
 package com.example.mealplanner.data.remote
 
-import com.example.mealplanner.common.Constants
+import com.example.mealplanner.core.common.Constants
 import com.example.mealplanner.data.remote.dto.chat.WebSocketMessage
 import com.example.mealplanner.domain.model.Message
 import com.google.gson.Gson

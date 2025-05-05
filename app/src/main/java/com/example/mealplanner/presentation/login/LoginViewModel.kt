@@ -2,7 +2,7 @@ package com.example.mealplanner.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mealplanner.common.Resource
+import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.domain.usecase.LoginUseCase
 import com.example.mealplanner.domain.usecase.SaveTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

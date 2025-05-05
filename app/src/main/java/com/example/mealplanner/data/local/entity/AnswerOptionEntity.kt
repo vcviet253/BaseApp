@@ -25,5 +25,6 @@ data class AnswerOptionEntity(
     /**
      * Should always be TRUE for Map Labeling entries in this optimized schema.
      */
-    val isCorrect: Boolean = true // Default to true, as we only store the correct one here
+    val isCorrect: Boolean = true, // Default to true, as we only store the correct one here
+    val blankIndex: Int? = null, // Optional: Index of the blank in the fill-in-the-blank question
 )

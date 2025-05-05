@@ -13,13 +13,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mealplanner.common.Constants
-import com.example.mealplanner.common.UserSession
+import com.example.mealplanner.core.common.Constants
+import com.example.mealplanner.core.common.UserSession
 import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.presentation.chat.ChatScreen
 import com.example.mealplanner.presentation.home.HomeScreen
 import com.example.mealplanner.presentation.login.LoginScreen
 import com.example.mealplanner.presentation.maplabeling.MapLabelingScreen
+import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
 import com.example.mealplanner.presentation.splash.SplashScreen
 import com.example.mealplanner.presentation.testlist.TestListScreen
 import kotlinx.coroutines.delay
@@ -47,6 +48,12 @@ fun AppNavigation(navController: NavHostController) {
             // No need to manually extract argument here for the screen composable itself,
             // as the ViewModel will get it via SavedStateHandle.
             MapLabelingScreen()
+        }
+
+        composable(
+            route = AppDestinations.SAMPLE_ANSWER_SPEAKING_ROUTE
+        ) {
+            SampleAnswersScreen()
         }
     }
 

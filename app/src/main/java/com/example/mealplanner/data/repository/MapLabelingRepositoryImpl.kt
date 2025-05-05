@@ -1,6 +1,6 @@
 package com.example.mealplanner.data.repository
 
-import com.example.mealplanner.common.Resource
+import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.data.local.dao.TestDao
 import com.example.mealplanner.data.mapper.toDomainModel
 import com.example.mealplanner.domain.maplabeling.model.MapLabelingTestData
