@@ -23,11 +23,12 @@ import com.example.mealplanner.presentation.maplabeling.MapLabelingScreen
 import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
 import com.example.mealplanner.presentation.splash.SplashScreen
 import com.example.mealplanner.presentation.testlist.TestListScreen
+import com.example.mealplanner.presentation.weather.WeatherScreen
 import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = AppDestinations.TEST_LIST_ROUTE) {
+    NavHost(navController = navController, startDestination = AppDestinations.WEATHER_ROUTE) {
         // Destination 1: Test List Screen
         composable(route = AppDestinations.TEST_LIST_ROUTE) {
             TestListScreen(navController = navController)
@@ -54,6 +55,12 @@ fun AppNavigation(navController: NavHostController) {
             route = AppDestinations.SAMPLE_ANSWER_SPEAKING_ROUTE
         ) {
             SampleAnswersScreen()
+        }
+
+        composable(
+            route = AppDestinations.WEATHER_ROUTE
+        ) {
+            WeatherScreen()
         }
     }
 

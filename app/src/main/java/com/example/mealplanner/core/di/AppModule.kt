@@ -7,10 +7,8 @@ import com.example.mealplanner.data.preferences.UserPreferences
 import com.example.mealplanner.data.remote.AuthApi
 import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
-import com.example.mealplanner.data.remote.WebSocketChatClient
-import com.example.mealplanner.data.repository.GeminiRepositoryImpl
+import com.example.mealplanner.data.remote.WeatherApi
 import com.example.mealplanner.data.utils.NetworkHelper
-import com.example.mealplanner.domain.repository.GeminiRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,6 +46,13 @@ object AppModule {
             .create(GeminiApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideWeatherApi() :WeatherApi {
+        return NetworkHelper.createRetrofit(Constants.WEATHER_API_BASE_URL)
+            .create(WeatherApi::class.java)
+    }
+
     //Authentication API (Login)
     @Provides
     @Singleton
@@ -76,7 +81,6 @@ object AppModule {
             .readTimeout(7, TimeUnit.SECONDS)      // Timeout nhận data về
             .build()
     }
-
 
     //UserID
     @Provides

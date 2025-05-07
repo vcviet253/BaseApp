@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MealPlanner</string>
+    <string name="temperature_celsius">%.1f&#176;C</string>
+    <string name="temperature_fahrenheit">%.1f&#176;F</string>
 </resources>

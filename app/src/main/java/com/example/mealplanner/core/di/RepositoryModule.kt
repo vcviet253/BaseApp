@@ -5,11 +5,13 @@ import com.example.mealplanner.data.repository.GeminiRepositoryImpl
 import com.example.mealplanner.data.repository.LoginRepositoryImpl
 import com.example.mealplanner.data.repository.MapLabelingRepositoryImpl
 import com.example.mealplanner.data.repository.TokenRepositoryImpl
+import com.example.mealplanner.data.repository.weather.WeatherRepositoryImpl
 import com.example.mealplanner.domain.maplabeling.repository.MapLabelingRepository
 import com.example.mealplanner.domain.repository.ChatRepository
 import com.example.mealplanner.domain.repository.GeminiRepository
 import com.example.mealplanner.domain.repository.LoginRepository
 import com.example.mealplanner.domain.repository.TokenRepository
+import com.example.mealplanner.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -49,4 +51,10 @@ abstract class RepositoryModule {
     abstract fun bindMapLabelingRepository (
         mapLabelingRepositoryImpl: MapLabelingRepositoryImpl
     ): MapLabelingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWeatherRepository(
+        weatherRepositoryImpl: WeatherRepositoryImpl
+    ): WeatherRepository
 }

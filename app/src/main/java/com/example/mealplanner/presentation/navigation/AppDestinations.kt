@@ -8,4 +8,6 @@ object AppDestinations {
     const val MAP_LABELING_FULL_ROUTE = "$MAP_LABELING_ROUTE/{$MAP_LABELING_ARG_TEST_ID}"
 
     const val SAMPLE_ANSWER_SPEAKING_ROUTE = "sampleAnswerSpeaking"
+
+    const val WEATHER_ROUTE = "weather"
 }
