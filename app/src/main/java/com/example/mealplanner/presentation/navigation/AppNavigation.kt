@@ -6,7 +6,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mealplanner.movie.presentation.HomeScreen
+import com.example.mealplanner.movie.presentation.home.HomeScreen
+import com.example.mealplanner.movie.presentation.movie.MovieScreen
 import com.example.mealplanner.presentation.maplabeling.MapLabelingScreen
 import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
 import com.example.mealplanner.presentation.testlist.TestListScreen
@@ -52,7 +53,14 @@ fun AppNavigation(navController: NavHostController) {
         composable(
             route = AppDestinations.HOME_ROUTE
         ) {
-            HomeScreen()
+            HomeScreen(navController)
+        }
+
+        composable(
+            route = AppDestinations.MOVIE_DETAIL_ROUTE,
+            arguments = listOf(navArgument(AppDestinations.MOVIE_DETAIL_ARG_SLUG) { type = NavType.StringType })
+        ) {
+            MovieScreen(navController)
         }
     }
 

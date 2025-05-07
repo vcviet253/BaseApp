@@ -10,6 +10,7 @@ class MovieRepositoryImpl @Inject constructor(private val api: MovieApi) : Movie
         return try {
             Resource.Success(api.getRecentlyUpdatedMovies(1).toDomain())
         } catch (e: Exception) {
+            println(e.localizedMessage)
             Resource.Error(e.localizedMessage ?: "Unknown error occurred")
         }
     }
@@ -18,6 +19,7 @@ class MovieRepositoryImpl @Inject constructor(private val api: MovieApi) : Movie
         return try {
             Resource.Success(api.getSingleMovie(slug).toDomain())
         } catch (e:Exception) {
+            println(e.localizedMessage)
             Resource.Error(e.localizedMessage ?: "Unknown error occurred")
         }
     }

@@ -118,12 +118,20 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.34.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0") // optional for page indicators
 
+
+    val exo_player_version = "1.3.0"
     //Media recording and playback
-    implementation("androidx.media3:media3-exoplayer:1.3.0")
-    implementation("androidx.media3:media3-session:1.3.0")
+    implementation("androidx.media3:media3-exoplayer:$exo_player_version")
+    implementation("androidx.media3:media3-session:$exo_player_version")
 
     //More icons
     implementation("androidx.compose.material:material-icons-extended:1.4.0")
 
+    // Compose BOM 2025+ (includes foundation.pager)
+    implementation(platform("androidx.compose:compose-bom:2025.04.01")) // adjust version as needed
+    implementation("androidx.compose.foundation:foundation")
 
+    // ExoPlayer
+     implementation("androidx.media3:media3-exoplayer-hls:$exo_player_version")
+     implementation("androidx.media3:media3-ui:$exo_player_version")
 }

@@ -62,7 +62,7 @@ fun MovieMetadataDto.toDomain(): MovieMetadata {
         is_copyright = is_copyright,
         lang = lang,
         modified = modified.time,
-        name = modified.time,
+        name = name,
         notify = notify,
         origin_name = origin_name,
         poster_url = poster_url,
@@ -91,5 +91,5 @@ fun RecentlyUpdatedMovies.toDomain(): List<Movie> {
 }
 
 fun SingleMovieDetailDto.toDomain(): Movie {
-    return Movie(movieMetadata.toDomain(), episodes.map { it.toDomain() })
+    return Movie(movie.toDomain(), episodes.map { it.toDomain() })
 }
