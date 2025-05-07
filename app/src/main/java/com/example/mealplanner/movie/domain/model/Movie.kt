@@ -1,7 +1,7 @@
 package com.example.mealplanner.movie.domain.model
 
-data class MovieDetail(
+data class Movie(
     val metadata: MovieMetadata,
-    val episodes: List<Episode>
+    val episodes: List<Episode>? = null
 ) {
 }

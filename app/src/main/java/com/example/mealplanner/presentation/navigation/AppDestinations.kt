@@ -10,4 +10,6 @@ object AppDestinations {
     const val SAMPLE_ANSWER_SPEAKING_ROUTE = "sampleAnswerSpeaking"
 
     const val WEATHER_ROUTE = "weather"
+
+    const val HOME_ROUTE = "home"
 }

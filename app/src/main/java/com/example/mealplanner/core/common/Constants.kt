@@ -7,6 +7,9 @@ object Constants {
     const val WEATHER_API_BASE_URL = "http://api.weatherapi.com/"
     const val WEATHER_API_KEY = "0e382cd0f7c94310abe72912250605"
 
+    const val MOVIE_API_BASE_URL = "https://phimapi.com/"
+    const val MOVIE_API_KEY = ""
+
     const val HOST = "10.0.2.2"
     const val PORT = 8000
     const val BASE_URL = "http://$HOST:$PORT/"

@@ -1,5 +1,5 @@
 package com.example.mealplanner.movie.data.dto.singlemoviedetail
 
-data class Modified(
+data class CreatedDto(
     val time: String
 )

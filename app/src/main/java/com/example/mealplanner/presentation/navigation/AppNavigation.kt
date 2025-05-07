@@ -1,34 +1,20 @@
 package com.example.mealplanner.presentation.navigation
 
-import android.app.Activity.MODE_PRIVATE
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mealplanner.core.common.Constants
-import com.example.mealplanner.core.common.UserSession
-import com.example.mealplanner.data.preferences.UserPreferences
-import com.example.mealplanner.presentation.chat.ChatScreen
-import com.example.mealplanner.presentation.home.HomeScreen
-import com.example.mealplanner.presentation.login.LoginScreen
+import com.example.mealplanner.movie.presentation.HomeScreen
 import com.example.mealplanner.presentation.maplabeling.MapLabelingScreen
 import com.example.mealplanner.presentation.speaking_helper.SampleAnswersScreen
-import com.example.mealplanner.presentation.splash.SplashScreen
 import com.example.mealplanner.presentation.testlist.TestListScreen
 import com.example.mealplanner.presentation.weather.WeatherScreen
-import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = AppDestinations.WEATHER_ROUTE) {
+    NavHost(navController = navController, startDestination = AppDestinations.HOME_ROUTE) {
         // Destination 1: Test List Screen
         composable(route = AppDestinations.TEST_LIST_ROUTE) {
             TestListScreen(navController = navController)
@@ -61,6 +47,12 @@ fun AppNavigation(navController: NavHostController) {
             route = AppDestinations.WEATHER_ROUTE
         ) {
             WeatherScreen()
+        }
+
+        composable(
+            route = AppDestinations.HOME_ROUTE
+        ) {
+            HomeScreen()
         }
     }
 

@@ -9,6 +9,7 @@ import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
 import com.example.mealplanner.data.remote.WeatherApi
 import com.example.mealplanner.data.utils.NetworkHelper
+import com.example.mealplanner.movie.data.MovieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,22 +23,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-//    @Provides
-//    @Singleton
-//    fun provideMealDbApi(): MealDbApi {
-//        return Retrofit.Builder().baseUrl(Constants.BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//            .create(MealDbApi::class.java)
-//    }
-
-//    @Provides
-//    @Singleton
-//    fun provideMealRepository(api: MealDbApi): MealRepository {
-//        return MealRepositoryImpl(api)
-//    }
-
-
     //Gemini AI API
     @Provides
     @Singleton
@@ -48,9 +33,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApi() :WeatherApi {
+    fun provideWeatherApi(): WeatherApi {
         return NetworkHelper.createRetrofit(Constants.WEATHER_API_BASE_URL)
             .create(WeatherApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieApi(): MovieApi {
+        return NetworkHelper.createRetrofit(Constants.MOVIE_API_BASE_URL)
+            .create(MovieApi::class.java)
     }
 
     //Authentication API (Login)
@@ -96,8 +88,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferences(sharedPreferences: SharedPreferences): UserPreferences
-    {
+    fun provideUserPreferences(sharedPreferences: SharedPreferences): UserPreferences {
         return UserPreferences(sharedPreferences)
     }
 }
