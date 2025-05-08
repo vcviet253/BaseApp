@@ -23,4 +23,21 @@ class MovieRepositoryImpl @Inject constructor(private val api: MovieApi) : Movie
             Resource.Error(e.localizedMessage ?: "Unknown error occurred")
         }
     }
+
+    override suspend fun getMoviesByCategory(
+        type: String,
+        page: Int?,
+        sort_field: String?,
+        sort_type: String?,
+        sort_lang: String?,
+        country: String?,
+        year: String?,
+        limit: Int?
+    ): Resource<List<Movie>> {
+        return try {
+            Resource.Success(api.getMoviesByCategory(type,page,sort_field,sort_type,sort_lang,country,year,limit).toMovieList())
+        } catch (e:Exception) {
+            Resource.Error(e.localizedMessage ?: "Unknown error occurred")
+        }
+    }
 }
