@@ -130,8 +130,12 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:$exo_player_version")
     implementation("androidx.media3:media3-session:$exo_player_version")
 
-
     // ExoPlayer
      implementation("androidx.media3:media3-exoplayer-hls:$exo_player_version")
      implementation("androidx.media3:media3-ui:$exo_player_version")
+
+    val accompanist_version = "0.34.0"
+    dependencies {
+        implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")
+    }
 }

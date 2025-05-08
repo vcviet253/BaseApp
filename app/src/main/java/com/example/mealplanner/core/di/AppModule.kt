@@ -9,7 +9,7 @@ import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
 import com.example.mealplanner.data.remote.WeatherApi
 import com.example.mealplanner.data.utils.NetworkHelper
-import com.example.mealplanner.movie.data.MovieApi
+import com.example.mealplanner.movie.data.api.MovieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

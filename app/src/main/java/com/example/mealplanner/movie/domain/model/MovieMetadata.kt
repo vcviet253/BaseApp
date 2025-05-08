@@ -1,11 +1,11 @@
 package com.example.mealplanner.movie.domain.model
 
-import com.example.mealplanner.movie.data.dto.common.CategoryDto
-import com.example.mealplanner.movie.data.dto.common.CountryDto
-import com.example.mealplanner.movie.data.dto.common.ImdbDto
-import com.example.mealplanner.movie.data.dto.common.ModifiedDto
-import com.example.mealplanner.movie.data.dto.common.TmdbDto
-import com.example.mealplanner.movie.data.dto.singlemoviedetail.CreatedDto
+import com.example.mealplanner.movie.data.remote.dto.common.CategoryDto
+import com.example.mealplanner.movie.data.remote.dto.common.CountryDto
+import com.example.mealplanner.movie.data.remote.dto.common.ImdbDto
+import com.example.mealplanner.movie.data.remote.dto.common.ModifiedDto
+import com.example.mealplanner.movie.data.remote.dto.common.TmdbDto
+import com.example.mealplanner.movie.data.remote.dto.singlemoviedetail.CreatedDto
 
 data class MovieMetadata(
     val id: String,

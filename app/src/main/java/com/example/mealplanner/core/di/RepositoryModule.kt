@@ -12,7 +12,7 @@ import com.example.mealplanner.domain.repository.GeminiRepository
 import com.example.mealplanner.domain.repository.LoginRepository
 import com.example.mealplanner.domain.repository.TokenRepository
 import com.example.mealplanner.domain.repository.WeatherRepository
-import com.example.mealplanner.movie.data.MovieRepositoryImpl
+import com.example.mealplanner.movie.data.repository.MovieRepositoryImpl
 import com.example.mealplanner.movie.domain.repository.MovieRepository
 import dagger.Binds
 import dagger.Module

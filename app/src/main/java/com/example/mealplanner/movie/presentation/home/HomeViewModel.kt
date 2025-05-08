@@ -1,21 +1,24 @@
 package com.example.mealplanner.movie.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.movie.domain.model.Movie
 import com.example.mealplanner.movie.domain.usecase.GetMoviesByCategoryUseCase
 import com.example.mealplanner.movie.domain.usecase.GetRecentlyUpdatedMoviesUseCase
+import com.example.mealplanner.movie.presentation.home.state.MovieCategoryState
+import com.example.mealplanner.movie.presentation.home.state.RecentlyUpdatedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import javax.inject.Inject
+
+private const val TAG = "HomeViewModel"
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -23,29 +26,36 @@ class HomeViewModel @Inject constructor(
     private val getMoviesByCategoryUseCase: GetMoviesByCategoryUseCase
 ) : ViewModel() {
 
-    private val _homeUiState = MutableStateFlow(HomeUiState())
-    val homeUiState = _homeUiState.asStateFlow()
+    // Map cho các category thông thường
+    private val _movieStates = MutableStateFlow<Map<String, MovieCategoryState>>(emptyMap())
+    val movieStates: StateFlow<Map<String, MovieCategoryState>> = _movieStates.asStateFlow()
+
+    // State riêng cho Recently Updated
+    private val _recentlyUpdatedState = MutableStateFlow(RecentlyUpdatedState())
+    val recentlyUpdatedState: StateFlow<RecentlyUpdatedState> = _recentlyUpdatedState.asStateFlow()
+
+    init {
+        Log.d(TAG, "Start fetching recently updated movies")
+        fetchRecentlyUpdatedMovies()
+        Log.d(TAG, "Finished fetching recently updated movies")
+        Log.d(TAG, "Start fetching movies by category")
+        listOf("hoc-duong", "gia-dinh", "tinh-cam").forEach { category ->
+            Log.d(TAG, "Start fetching $category movies")
+            startFetchingMoviesByCategory(category)
+        }
+    }
 
     fun fetchRecentlyUpdatedMovies() {
-        _homeUiState.update { state -> state.copy(isLoading = true) }
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = getRecentlyUpdatedMoviesUseCase()
-            when (result) {
-                is Resource.Success -> {
-                    val movies = result.data
-                    _homeUiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            moviesByType = state.moviesByType + ("recently-updated" to movies)
-                        )
-                    }
-                }
+        viewModelScope.launch {
+            _recentlyUpdatedState.value = RecentlyUpdatedState(isLoading = true)
 
-                is Resource.Error -> _homeUiState.update { it.copy(isLoading = false) }
+            val result = getRecentlyUpdatedMoviesUseCase(
+            )
 
-                is Resource.Loading -> {
-                    // optional, probably not needed here since you already set isLoading = true
-                }
+            _recentlyUpdatedState.value = when (result) {
+                is Resource.Success -> RecentlyUpdatedState(movies = result.data)
+                is Resource.Error -> RecentlyUpdatedState(error = result.message)
+                else -> RecentlyUpdatedState(isLoading = true)
             }
         }
     }
@@ -60,33 +70,29 @@ class HomeViewModel @Inject constructor(
         year: String? = null,
         limit: Int? = null
     ) {
-        _homeUiState.update { state -> state.copy(isLoading = true) }
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = fetchMoviesByCategory(type)
-            when (result) {
-                is Resource.Success -> {
-                    val movies = result.data
-                    _homeUiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            moviesByType = state.moviesByType + (type to movies)
-                        )
-                    }
-                }
+        viewModelScope.launch {
+            _movieStates.update { current ->
+                current + (type to MovieCategoryState(isLoading = true))
+            }
 
-                is Resource.Error -> _homeUiState.update { it.copy(isLoading = false) }
+            val result = fetchMoviesByCategory(type = type)
 
-                is Resource.Loading -> {
-                    // optional, probably not needed here since you already set isLoading = true
-                }
+            _movieStates.update { current ->
+                current + (type to when (result) {
+                    is Resource.Success -> MovieCategoryState(
+                        isLoading = false,
+                        movies = result.data
+                    )
+                    is Resource.Error -> MovieCategoryState(
+                        isLoading = false,
+                        error = result.message
+                    )
+                    is Resource.Loading -> MovieCategoryState(isLoading = true)
+                })
             }
         }
     }
 
-    init {
-        fetchRecentlyUpdatedMovies()
-        startFetchingMoviesByCategory()
-    }
 
     suspend fun fetchMoviesByCategory(
         type: String,
