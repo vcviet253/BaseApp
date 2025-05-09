@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.core.animation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -102,4 +104,43 @@ dependencies {
 
     // OkHttp (Networking)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    //Json serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+
+    //NEVER USE GSON, USE SERIALIZATION KOTLIN INSTEAD
+
+    // Image loading with Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Horizontal Pager
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0") // optional for page indicators
+
+    //More icons
+    implementation("androidx.compose.material:material-icons-extended:1.4.0")
+
+    // Compose BOM 2025+ (includes foundation.pager)
+    implementation(platform("androidx.compose:compose-bom:2025.04.01")) // adjust version as needed
+    implementation("androidx.compose.foundation:foundation:1.5.0")
+
+    val exo_player_version = "1.3.0"
+    //Media recording and playback
+    implementation("androidx.media3:media3-exoplayer:$exo_player_version")
+    implementation("androidx.media3:media3-session:$exo_player_version")
+
+    // ExoPlayer
+     implementation("androidx.media3:media3-exoplayer-hls:$exo_player_version")
+     implementation("androidx.media3:media3-ui:$exo_player_version")
+
+    val accompanist_version = "0.34.0"
+    implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist_version")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Compose Animation (cần thiết cho slideIn, fadeIn, tween...)
+    implementation("androidx.compose.animation:animation:1.6.6") // Hoặc phiên bản mới nhất
+
 }
