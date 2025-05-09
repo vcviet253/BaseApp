@@ -123,7 +123,7 @@ dependencies {
 
     // Compose BOM 2025+ (includes foundation.pager)
     implementation(platform("androidx.compose:compose-bom:2025.04.01")) // adjust version as needed
-    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.foundation:foundation:1.5.0")
 
     val exo_player_version = "1.3.0"
     //Media recording and playback
@@ -135,7 +135,12 @@ dependencies {
      implementation("androidx.media3:media3-ui:$exo_player_version")
 
     val accompanist_version = "0.34.0"
-    dependencies {
-        implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")
-    }
+    implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist_version")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    // Compose Animation (cần thiết cho slideIn, fadeIn, tween...)
+    implementation("androidx.compose.animation:animation:1.6.6") // Hoặc phiên bản mới nhất
+
 }

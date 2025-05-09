@@ -9,7 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.example.mealplanner.presentation.navigation.AppNavigation
+import com.example.mealplanner.movie.presentation.navigation.MainAppScreen
+import com.example.mealplanner.movie.presentation.navigation.MovieAppNavHost
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,11 +25,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            AppNavigation(navController)
+            MainAppScreen()
         }
     }
 }
-
 
 @Preview
 @Composable

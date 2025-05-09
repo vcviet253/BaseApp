@@ -5,7 +5,10 @@ package com.example.mealplanner.movie.presentation.home
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.MarqueeAnimationMode
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -51,6 +57,7 @@ import com.example.mealplanner.presentation.navigation.AppDestinations
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material3.placeholder
 import com.google.accompanist.placeholder.material3.shimmer
+import com.google.accompanist.placeholder.placeholder
 import kotlin.math.absoluteValue
 
 @Composable
@@ -68,7 +75,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
             // Recently Updated
             when {
                 recentlyUpdatedState.isLoading -> {
-                    RecentlyUpdatedMoviesShimmerPager ()
+                    RecentlyUpdatedMoviesShimmerPagerPlaceHolder()
                 }
 
                 recentlyUpdatedState.error.isNotEmpty() -> {
@@ -152,41 +159,54 @@ fun MoviePosterCard(movie: Movie, onClick: (String) -> Unit) {
                 onClick(movie.metadata.slug)
             }
     ) {
+        var imageLoaded by remember { mutableStateOf(false) }
+
+        if (!imageLoaded) {
+            ShimmerMoviePosterCard()
+        }
+
         AsyncImage(
             //  model = movie.metadata.poster_url,
             model = "https://phimimg.com/${movie.metadata.poster_url.removePrefix("/")}",
             contentDescription = movie.metadata.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
-            placeholder = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with your placeholder
-            error = painterResource(id = R.drawable.ic_launcher_background) // Replace with your error image
+            error = painterResource(id = R.drawable.ic_launcher_background), // Replace with your error image
+            onSuccess = { imageLoaded = true }
         )
 
-        // Optional: Add a gradient overlay or movie title at the bottom
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                        startY = 0f,
-                        endY = Float.POSITIVE_INFINITY
+        if (imageLoaded) {
+            // Optional: Add a gradient overlay or movie title at the bottom
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                            startY = 0f,
+                            endY = Float.POSITIVE_INFINITY
+                        )
+                    )
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = movie.metadata.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip,
+                    modifier = Modifier.fillMaxWidth().basicMarquee(
+                        animationMode = MarqueeAnimationMode.Immediately, // hoặc WhileFocused
+                        repeatDelayMillis = 1800, //độ trễ trước vong lap tiep theo
+                        spacing = MarqueeSpacing(48.dp), // khoảng cách giữa 2 lần lặp
+                        velocity = 30.dp // tốc độ: dp per second
                     )
                 )
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 4.dp, vertical = 2.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = movie.metadata.name,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            }
         }
-
     }
 }
 
@@ -215,14 +235,13 @@ fun ShimmerMovieRowList() {
     }
 }
 
-
 @Composable
 fun RecentlyUpdatedMoviesPager(
     movies: List<Movie>,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit
 ) {
-    val pagerState = rememberPagerState(initialPage = movies.size/2, pageCount = { movies.size })
+    val pagerState = rememberPagerState(initialPage = movies.size / 2, pageCount = { movies.size })
 
     Column(modifier = modifier) {
         HorizontalPager(
@@ -240,7 +259,6 @@ fun RecentlyUpdatedMoviesPager(
 
             // Apply exaggerated visual effect for outer pages
             val visualOffset = if (clampedOffset.absoluteValue < 0.001f) 0f else clampedOffset
-
             Box(
                 modifier = Modifier
                     // .fillMaxWidth() // Assuming this is part of your item's modifier
@@ -265,18 +283,26 @@ fun RecentlyUpdatedMoviesPager(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                // Background Layer: Blurred and fills the entire space
-                AsyncImage(
-                    model = movie.metadata.thumb_url,
-                    contentDescription = null, // Decorative, as it's a background
-                    contentScale = ContentScale.Crop, // Crop will ensure it fills the bounds
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .blur(radius = 25.dp), // Adjust radius as needed.
-                    // Note: .blur() is simpler on Android 12+ (API 31+).
-                    // For older APIs, you might need a Coil Transformation for blur.
-                    alpha = 0.7f // Optional: Make the background slightly transparent
-                )
+                var imageLoaded by remember { mutableStateOf(false) }
+
+                if (!imageLoaded) {
+                    ShimmerBox()
+                }
+
+                if (imageLoaded) {
+                    // Background Layer: Blurred and fills the entire space
+                    AsyncImage(
+                        model = movie.metadata.thumb_url,
+                        contentDescription = null, // Decorative, as it's a background
+                        contentScale = ContentScale.Crop, // Crop will ensure it fills the bounds
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blur(radius = 25.dp), // Adjust radius as needed.
+                        // Note: .blur() is simpler on Android 12+ (API 31+).
+                        // For older APIs, you might need a Coil Transformation for blur.
+                        alpha = 0.7f, // Optional: Make the background slightly transparent
+                    )
+                }
 
                 // Foreground Layer: Your main image with ContentScale.Fit
                 AsyncImage(
@@ -284,8 +310,8 @@ fun RecentlyUpdatedMoviesPager(
                     contentDescription = movie.metadata.name,
                     contentScale = ContentScale.Fit, // Shows the full image, letterboxed if needed
                     modifier = Modifier.fillMaxSize(), // It will fit within this Box
-                    placeholder = painterResource(id = R.drawable.ic_launcher_foreground),
-                    error = painterResource(id = R.drawable.ic_launcher_background)
+                    error = painterResource(id = R.drawable.ic_launcher_background),
+                    onSuccess = { imageLoaded = true }
                 )
             }
         }
@@ -352,10 +378,11 @@ fun PagerIndicator(
 }
 
 @Composable
-fun RecentlyUpdatedMoviesShimmerPager(
-    modifier: Modifier = Modifier,
+fun RecentlyUpdatedMoviesShimmerPagerPlaceHolder(
+    size: Int = 5,
+    modifier: Modifier = Modifier
 ) {
-    val pagerState = rememberPagerState(pageCount = { 5 })
+    val pagerState = rememberPagerState(initialPage = size / 2, pageCount = { size })
 
     Column(modifier = modifier) {
         HorizontalPager(
@@ -367,12 +394,12 @@ fun RecentlyUpdatedMoviesShimmerPager(
                 .fillMaxWidth()
                 .height(200.dp)
         ) { page ->
-            val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+            val pageOffset =
+                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
             val clampedOffset = pageOffset.coerceIn(-1f, 1f)
 
             // Apply exaggerated visual effect for outer pages
             val visualOffset = if (clampedOffset.absoluteValue < 0.001f) 0f else clampedOffset
-
             Box(
                 modifier = Modifier
                     // .fillMaxWidth() // Assuming this is part of your item's modifier
@@ -395,22 +422,12 @@ fun RecentlyUpdatedMoviesShimmerPager(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.medium)
-                        .placeholder(
-                            visible = true,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = Color.Gray,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                )
+                ShimmerBox()
             }
         }
 
         PagerIndicator(
-            totalDots = 5,
+            totalDots = size,
             selectedIndex = pagerState.currentPage,
             modifier = Modifier
                 .fillMaxWidth()
@@ -419,3 +436,18 @@ fun RecentlyUpdatedMoviesShimmerPager(
     }
 }
 
+
+@Composable
+fun ShimmerBox(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(MaterialTheme.shapes.medium)
+            .placeholder(
+                visible = true,
+                highlight = PlaceholderHighlight.shimmer(),
+                color = Color.Gray,
+                shape = MaterialTheme.shapes.medium
+            )
+    )
+}

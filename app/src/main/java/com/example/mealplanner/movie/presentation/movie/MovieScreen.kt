@@ -72,9 +72,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 
 
 @OptIn(UnstableApi::class)
@@ -255,133 +257,6 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
             }
 
             Column(modifier = Modifier.fillMaxSize()) {
-                AndroidView(
-                    factory = { ctx ->
-                        PlayerView(ctx).apply {
-                            player = viewModel.exoPlayer // Gán player ban đầu
-                            useController = true
-                        }.also {
-                            playerView = it
-                        }
-                    },
-                    update = { view ->
-                        // Cập nhật player nếu instance trong ViewModel thay đổi
-                        if (view.player != viewModel.exoPlayer) {
-                            view.player = viewModel.exoPlayer
-                            Log.d(
-                                "MovieScreen",
-                                "AndroidView Update: PlayerView updated. Player is ${if (view.player != null) "NOT NULL" else "NULL"}"
-                            )
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp) // Thay aspectRatio bằng height cụ thể
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp)
-                        .pointerInput(Unit) {
-                            detectTapGestures {
-                                Log.d("MovieScreen", "Box Tapped!") // Kiểm tra log khi click
-                                controlsVisible = !controlsVisible
-                                if (controlsVisible) scheduleHideControls() else hideControlsJob?.cancel()
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-
-//                    NetflixStylePlayerControls(
-//                        // Điều kiện hiển thị: controlsVisible VÀ (player đã sẵn sàng HOẶC đang phát/buffering)
-//                        // VÀ không phải đang ở trạng thái lỗi nghiêm trọng (PlayerState.Error).
-//                        // Trạng thái Loading ban đầu (fetch URL) sẽ không hiển thị controls.
-//                        isVisible = controlsVisible && (playerState == PlayerState.Ready || playerState == PlayerState.Playing || playerState == PlayerState.Paused || playerState == PlayerState.Buffering || playerState == PlayerState.Ended),
-//                        playerState = playerState,
-//                        currentSpeed = currentSpeed,
-//                        onPlayPauseToggle = { viewModel.togglePlayPause() },
-//                        onRewind = { viewModel.seekRewind() },
-//                        onForward = { viewModel.seekForward() },
-//                        onSpeedSelected = { speed -> viewModel.setPlaybackSpeed(speed) },
-//                        onAudioSubtitlesClicked = {
-//                            Log.d("MovieScreen", "Audio/Subtitles button clicked")
-//                        },
-//                        onNextEpisodeClicked = { viewModel.playNextEpisodeFromFirstServerIfAvailable() },
-//                        hasNextEpisode = currentPlayingEpisodeIndex >= 0 && currentPlayingEpisodeIndex < firstServerEpisodes.size - 1
-//                    )
-
-                    // Lớp phủ cho trạng thái Loading (fetch URL) / Buffering / Error của Player
-                    when (val currentPlayerState = playerState) {
-                        is PlayerState.Loading -> { // Chỉ Loading khi fetch URL hoặc khởi tạo player ban đầu
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                                Log.d(
-                                    "MovieScreen",
-                                    "UI State: PlayerState.Loading (Initial URL/Player Load)"
-                                )
-                            }
-                        }
-
-                        is PlayerState.Buffering -> {
-                            // Hiển thị buffering ngay cả khi controls hiện, vì nó quan trọng
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
-                                Log.d("MovieScreen", "UI State: PlayerState.Buffering")
-                            }
-                        }
-
-                        is PlayerState.Error -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black.copy(alpha = 0.8f))
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ErrorOutline,
-                                        contentDescription = "Biểu tượng lỗi",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(60.dp)
-                                    )
-                                    Text(
-                                        text = "Lỗi Video",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.padding(top = 12.dp)
-                                    )
-                                    Text(
-                                        text = currentPlayerState.message,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onErrorContainer,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                    Log.e(
-                                        "MovieScreen",
-                                        "UI State: PlayerState.Error - ${currentPlayerState.message}"
-                                    )
-                                }
-                            }
-                        }
-
-                        else -> {
-                            Log.d(
-                                "MovieScreen",
-                                "UI State: $currentPlayerState (No specific overlay)"
-                            )
-                        }
-                    }
-                }
-
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     item {
                         Text(
@@ -413,34 +288,27 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
                         )
                     }
                     itemsIndexed(firstServerEpisodes) { index, episode ->
-                        val isCurrentlyPlayingThisEpisode = index == currentPlayingEpisodeIndex &&
-                                (playerState == PlayerState.Playing ||
-                                        playerState == PlayerState.Buffering ||
-                                        playerState == PlayerState.Ready ||
-                                        playerState == PlayerState.Paused)
 
                         Button(
                             onClick = {
+                                // Gọi hàm helper để tạo route với URL đã được encode và nhúng vào route
+                                val route = MovieAppDestinations.createMoviePlayerRoute(episode.link_m3u8)
+                                navController.navigate(route)
                                 Log.d(
                                     "MovieScreen",
                                     "Episode button clicked: ${episode.name} (Index: $index)"
                                 )
-                                // Chỉ phát lại nếu là tập khác, hoặc có lỗi, hoặc đã kết thúc/idle
-                                if (index != currentPlayingEpisodeIndex || playerState is PlayerState.Error || playerState == PlayerState.Ended || playerState == PlayerState.Idle) {
-                                    viewModel.playEpisodeFromFirstServer(episode, index)
-                                }
-                                controlsVisible = true // Hiển thị controls khi người dùng tương tác
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isCurrentlyPlayingThisEpisode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                         ) {
                             Text(
                                 episode.name,
-                                color = if (isCurrentlyPlayingThisEpisode) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     }
