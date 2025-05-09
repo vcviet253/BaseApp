@@ -1,6 +1,5 @@
 package com.example.mealplanner.movie.presentation.playerscreen
 
-import android.view.TextureView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

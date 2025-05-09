@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.mealplanner.movie.presentation.navigation.MainAppScreen
-import com.example.mealplanner.movie.presentation.navigation.MovieAppNavHost
 import com.example.mealplanner.ui.theme.MealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -8,13 +8,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,7 +28,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Forward10
@@ -69,7 +76,10 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.example.mealplanner.core.common.Resource
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
@@ -257,223 +267,77 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
             }
 
             Column(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    item {
-                        Text(
-                            text = movieDetail.metadata.name,
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        Text(
-                            text = "Mô tả: ${movieDetail.metadata.content}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                        movieDetail.episodes!!.firstOrNull()?.let { firstServer ->
-                            Text(
-                                text = "Server: ${firstServer.serverName}",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-                            )
-                        }
-                        Text(
-                            text = "Danh sách tập:",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 12.dp,
-                                bottom = 4.dp
-                            )
-                        )
-                    }
-                    itemsIndexed(firstServerEpisodes) { index, episode ->
 
-                        Button(
-                            onClick = {
-                                // Gọi hàm helper để tạo route với URL đã được encode và nhúng vào route
-                                val route = MovieAppDestinations.createMoviePlayerRoute(episode.link_m3u8)
-                                navController.navigate(route)
-                                Log.d(
-                                    "MovieScreen",
-                                    "Episode button clicked: ${episode.name} (Index: $index)"
-                                )
-                            },
+                Text(
+                    text = movieDetail.metadata.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Mô tả: ${movieDetail.metadata.content}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 10,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                movieDetail.episodes!!.firstOrNull()?.let { firstServer ->
+                    Text(
+                        text = "Server: ${firstServer.serverName}",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    )
+                }
+                Text(
+                    text = "Danh sách tập:",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 12.dp,
+                        bottom = 4.dp
+                    )
+                )
+
+                LazyVerticalGrid(
+                    modifier = Modifier.weight(1f),
+                    columns = GridCells.Fixed(5),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                    itemsIndexed(firstServerEpisodes) { index, episode ->
+                        val boxShape = RoundedCornerShape(8.dp) // Định nghĩa hình dạng bo góc
+
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
+                                // .fillMaxWidth() // Bỏ fillMaxWidth() để box nhỏ hơn, hoặc giữ nếu muốn ô lấp đầy cột
+                                // .size(60.dp) // Đặt kích thước cố định nếu muốn box vuông nhỏ
+                                .weight(1f) // Cho phép box lấp đầy chiều rộng còn lại trong cột
+                                .clip(boxShape) // Cắt hiệu ứng ripple theo hình dạng bo góc
+                                .background(MaterialTheme.colorScheme.primaryContainer) // Màu nền của box
+                                .clickable { // Làm cho Box có thể click được
+                                    val route = MovieAppDestinations.createMoviePlayerRoute(episode.link_m3u8)
+                                    navController.navigate(route)
+                                    android.util.Log.d(
+                                        "MovieScreen",
+                                        "Episode box clicked: ${episode.name} (Index: $index)"
+                                    )
+                                }
+                                .border( // Thêm viền
+                                    BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f)),
+                                    shape = boxShape
+                                )
+                                .padding(vertical = 8.dp, horizontal = 4.dp), // Padding bên trong box
+                            contentAlignment = Alignment.Center // Căn giữa nội dung bên trong Box
                         ) {
                             Text(
-                                episode.name,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                text = episode.name,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontSize = 12.sp, // Điều chỉnh cỡ chữ cho box nhỏ
+                                maxLines = 1 // Đảm bảo chữ không xuống dòng quá nhiều
                             )
                         }
                     }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun NetflixStylePlayerControls(
-    isVisible: Boolean,
-    playerState: PlayerState,
-    currentSpeed: Float,
-    onPlayPauseToggle: () -> Unit,
-    onRewind: () -> Unit,
-    onForward: () -> Unit,
-    onSpeedSelected: (Float) -> Unit,
-    onAudioSubtitlesClicked: () -> Unit,
-    onNextEpisodeClicked: () -> Unit,
-    hasNextEpisode: Boolean,
-    modifier: Modifier = Modifier
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn(animationSpec = tween(200)),
-        exit = fadeOut(animationSpec = tween(200)),
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f))
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onRewind,
-                    modifier = Modifier.size(60.dp),
-                    enabled = playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                ) {
-                    Icon(
-                        Icons.Filled.Replay10,
-                        contentDescription = "Tua lại 10 giây",
-                        tint = if (playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error) Color.White else Color.Gray,
-                        modifier = Modifier.fillMaxSize(0.85f)
-                    )
-                }
-                IconButton(
-                    onClick = onPlayPauseToggle,
-                    modifier = Modifier.size(80.dp),
-                    enabled = playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                ) {
-                    val icon = when (playerState) {
-                        PlayerState.Playing, PlayerState.Buffering -> Icons.Filled.PauseCircleFilled // Coi Buffering như đang chuẩn bị phát
-                        is PlayerState.Error -> Icons.Filled.ReportProblem
-                        else -> Icons.Filled.PlayCircleFilled
-                    }
-                    val contentDesc = when (playerState) {
-                        PlayerState.Playing, PlayerState.Buffering -> "Tạm dừng"
-                        is PlayerState.Error -> "Lỗi"
-                        else -> "Phát"
-                    }
-                    Icon(
-                        icon,
-                        contentDescription = contentDesc,
-                        tint = if (playerState !is PlayerState.Loading && playerState !is PlayerState.Error) Color.White else Color.Gray,
-                        modifier = Modifier.fillMaxSize(0.9f)
-                    )
-                }
-                IconButton(
-                    onClick = onForward,
-                    modifier = Modifier.size(60.dp),
-                    enabled = playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                ) {
-                    Icon(
-                        Icons.Filled.Forward10,
-                        contentDescription = "Tua tới 10 giây",
-                        tint = if (playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error) Color.White else Color.Gray,
-                        modifier = Modifier.fillMaxSize(0.85f)
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                var showSpeedMenu by remember { mutableStateOf(false) }
-                val speedButtonEnabled =
-                    playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                Box {
-                    TextButton(
-                        onClick = { if (speedButtonEnabled) showSpeedMenu = true },
-                        enabled = speedButtonEnabled
-                    ) {
-                        Icon(
-                            Icons.Filled.Speed,
-                            contentDescription = "Tốc độ",
-                            tint = if (speedButtonEnabled) Color.White else Color.Gray,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = if (currentSpeed == 1.0f) "Tốc độ" else "${currentSpeed}x",
-                            color = if (speedButtonEnabled) Color.White else Color.Gray,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showSpeedMenu,
-                        onDismissRequest = { showSpeedMenu = false }
-                    ) {
-                        listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f).forEach { speed ->
-                            DropdownMenuItem(
-                                text = { Text("${speed}x") },
-                                onClick = {
-                                    onSpeedSelected(speed)
-                                    showSpeedMenu = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                val settingsButtonEnabled =
-                    playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                IconButton(
-                    onClick = onAudioSubtitlesClicked,
-                    modifier = Modifier.size(48.dp),
-                    enabled = settingsButtonEnabled
-                ) {
-                    Icon(
-                        Icons.Filled.Settings,
-                        contentDescription = "Âm thanh/Phụ đề",
-                        tint = if (settingsButtonEnabled) Color.White else Color.Gray
-                    )
-                }
-
-                val nextEpisodeButtonEnabled =
-                    hasNextEpisode && playerState != PlayerState.Idle && playerState !is PlayerState.Loading && playerState !is PlayerState.Error
-                if (hasNextEpisode) { // Luôn giữ cấu trúc, chỉ thay đổi enabled state
-                    IconButton(
-                        onClick = onNextEpisodeClicked,
-                        modifier = Modifier.size(48.dp),
-                        enabled = nextEpisodeButtonEnabled
-                    ) {
-                        Icon(
-                            Icons.Filled.SkipNext,
-                            contentDescription = "Tập tiếp theo",
-                            tint = if (nextEpisodeButtonEnabled) Color.White else Color.Gray
-                        )
-                    }
-                } else {
-                    Spacer(Modifier.width(48.dp)) // Giữ chỗ để layout không bị xô lệch
                 }
             }
         }

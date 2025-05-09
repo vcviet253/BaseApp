@@ -55,7 +55,6 @@ import com.example.mealplanner.R
 import com.example.mealplanner.movie.domain.model.Movie
 import com.example.mealplanner.presentation.navigation.AppDestinations
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material3.placeholder
 import com.google.accompanist.placeholder.material3.shimmer
 import com.google.accompanist.placeholder.placeholder
 import kotlin.math.absoluteValue
@@ -125,7 +124,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
         }
     }

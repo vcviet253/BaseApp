@@ -30,27 +30,24 @@ fun MovieAppNavHost(navController: NavHostController) {
         // --- Màn hình dùng Scaffold chung (Nhóm 1) ---
         composable(
             route = MovieAppDestinations.HOME_ROUTE,
-            // Transition khi HOME xuất hiện (từ màn hình trước đó pop về)
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = tween(400)
-                ) + fadeIn(animationSpec = tween(400))
-            },
-            // Transition khi HOME biến mất (điều hướng sang màn hình khác)
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = tween(400)
-                ) + fadeOut(animationSpec = tween(400))
-            },
+            // Nếu là điều hướng thông thường đến HOME (không phải pop)
             enterTransition = {
+                // Giữ nguyên như bạn đã có, nếu bạn muốn HOME slide in từ trái khi được điều hướng tới
                 slideInHorizontally(
                     initialOffsetX = { fullWidth -> -fullWidth },
                     animationSpec = tween(400)
                 ) + fadeIn(animationSpec = tween(400))
             },
+
+            // --- Khi HOME biến mất (điều hướng sang màn hình Detail) ---
+            // Home đứng yên khi Detail trượt vào
+            exitTransition = {
+                // HOME đứng yên, chỉ fade out (hoặc return null nếu không muốn fade)
+                fadeOut(animationSpec = tween(400))
+            },
+            // Khi HOME biến mất vì một màn hình khác bị pop đi (không liên quan trực tiếp đến trường hợp Home -> Detail -> Home)
             popExitTransition = {
+                // Giữ nguyên như bạn đã có
                 slideOutHorizontally(
                     targetOffsetX = { fullWidth -> fullWidth },
                     animationSpec = tween(400)
@@ -62,9 +59,36 @@ fun MovieAppNavHost(navController: NavHostController) {
 
         composable(
             route = MovieAppDestinations.MOVIE_DETAIL_ROUTE,
-            arguments = listOf(navArgument(MovieAppDestinations.MOVIE_DETAIL_ARG_SLUG) {
-                type = NavType.StringType
-            })
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth }, // Xuất hiện từ bên phải
+                    animationSpec = tween(400)
+                ) + fadeIn(animationSpec = tween(400))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> fullWidth }, // Trượt ra bên phải
+                    animationSpec = tween(400)
+                ) + fadeOut(animationSpec = tween(400))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> -fullWidth },
+                    animationSpec = tween(400)
+                ) + fadeOut(animationSpec = tween(400))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth },
+                    animationSpec = tween(400)
+                ) + fadeIn(animationSpec = tween(400))
+            },
+            arguments = listOf(
+                navArgument(MovieAppDestinations.MOVIE_DETAIL_ARG_SLUG) {
+                    type = NavType.StringType
+                },
+
+            )
         ) {
             MovieScreen(navController)
         }
