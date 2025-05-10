@@ -11,6 +11,12 @@ object MovieAppDestinations {
     const val MOVIE_PLAYER_ARG_URL = "videoUrl" // Key này phải khớp với key trong SavedStateHandle
     const val MOVIE_PLAYER_ROUTE = "$MOVIE_PLAYER_BASE_ROUTE/{$MOVIE_PLAYER_ARG_URL}" // Route đầy đủ với tham số
 
+    // --- Movies by Category ---
+    const val MOVIES_BY_CATEGORY_BASE_ROUTE = "movies_by_category"
+    const val MOVIES_BY_CATEGORY_ARG_URL = "category"
+    const val MOVIES_BY_CATEGORY_ROUTE = "$MOVIES_BY_CATEGORY_BASE_ROUTE/{$MOVIES_BY_CATEGORY_ARG_URL}"
+
+
     const val HOME_ROUTE = "movie_home" // Phần gốc của route
 
     const val  SETTINGS_ROUTE = "settings" // Route for settings screen
