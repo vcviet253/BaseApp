@@ -29,6 +29,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mealplanner.R
 import com.example.mealplanner.movie.domain.model.Movie
+import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
 import com.example.mealplanner.presentation.navigation.AppDestinations
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material3.shimmer
@@ -97,11 +99,21 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
         // Movies by Category (Hành Động, Hài, Tình Cảm)
         items(listOf("hoc-duong", "gia-dinh", "tinh-cam"), key = { it }) { category ->
             val categoryState = movieStates[category]
-
-            Text(
-                category.replace("-", " ").replaceFirstChar { it.uppercase() },
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    category.replace("-", " ").replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.titleMedium
+                )
+                TextButton(
+                    onClick = {
+                        navController.navigate("${MovieAppDestinations.MOVIES_BY_CATEGORY_BASE_ROUTE}/$category")
+                    }
+                ) {
+                    Text("Xem thêm")
+                }
+            }
             when {
                 categoryState == null || categoryState.isLoading -> {
                     ShimmerMovieRowList()
@@ -119,7 +131,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                         category,
                         categoryState.movies,
                         onClick = { slug ->
-                            navController.navigate("${AppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
+                            navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
                         }
                     )
                 }

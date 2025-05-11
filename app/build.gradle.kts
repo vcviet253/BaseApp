@@ -125,14 +125,14 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2025.04.01")) // adjust version as needed
     implementation("androidx.compose.foundation:foundation:1.5.0")
 
-    val exo_player_version = "1.3.0"
+    val media3_version = "1.3.1"
     //Media recording and playback
-    implementation("androidx.media3:media3-exoplayer:$exo_player_version")
-    implementation("androidx.media3:media3-session:$exo_player_version")
+    implementation("androidx.media3:media3-exoplayer:$media3_version")
+    implementation("androidx.media3:media3-session:$media3_version")
 
     // ExoPlayer
-     implementation("androidx.media3:media3-exoplayer-hls:$exo_player_version")
-     implementation("androidx.media3:media3-ui:$exo_player_version")
+     implementation("androidx.media3:media3-exoplayer-hls:$media3_version")
+     implementation("androidx.media3:media3-ui:$media3_version")
 
     val accompanist_version = "0.34.0"
     implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")

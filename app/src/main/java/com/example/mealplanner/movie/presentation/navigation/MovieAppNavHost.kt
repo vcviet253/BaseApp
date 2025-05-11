@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.mealplanner.movie.presentation.bookmarks.BookmarksScreen
 import com.example.mealplanner.movie.presentation.home.HomeScreen
 import com.example.mealplanner.movie.presentation.movie.MovieScreen
+import com.example.mealplanner.movie.presentation.moviesbycategory.MoviesByCategoryScreen
 import com.example.mealplanner.movie.presentation.onboarding.OnboardingScreen
 import com.example.mealplanner.movie.presentation.playerscreen.MoviePlayerScreen
 import com.example.mealplanner.movie.presentation.settings.SettingsScreen
@@ -117,8 +118,17 @@ fun MovieAppNavHost(navController: NavHostController) {
                     type = NavType.StringType // Kiểu dữ liệu của tham số
                 }
             )
-        ) { backStackEntry ->
+        ) {
             MoviePlayerScreen(navController) // ViewModel của nó sẽ nhận SavedStateHandle đã có URL
+        }
+
+        composable(
+            route = MovieAppDestinations.MOVIES_BY_CATEGORY_ROUTE,
+            arguments = listOf(navArgument(MovieAppDestinations.MOVIES_BY_CATEGORY_ARG_URL) {
+                type = NavType.StringType
+            })
+        ) {
+            MoviesByCategoryScreen(navController)
         }
 
     }
