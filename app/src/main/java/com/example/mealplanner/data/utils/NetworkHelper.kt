@@ -8,14 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkHelper {
     fun createRetrofit(
         baseUrl: String,
-        clientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+       okHttpClient: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .client(clientBuilder.build())
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

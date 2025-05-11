@@ -1,7 +1,9 @@
 package com.example.mealplanner.movie.domain.repository
 
+import androidx.paging.PagingData
 import com.example.mealplanner.core.common.Resource
 import com.example.mealplanner.movie.domain.model.Movie
+import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
     suspend fun getRecentlyUpdatedMovies(): Resource<List<Movie>>
@@ -16,4 +18,12 @@ interface MovieRepository {
         year: String? = null,
         limit: Int? = null
     ): Resource<List<Movie>>
+    fun getMoviesByCategoryPaged(
+        type: String,
+        sortField: String? = null,
+        sortType: String? = null,
+        sortLang: String? = null,
+        country: String? = null,
+        year: String? = null,
+    ): Flow<PagingData<Movie>>
 }

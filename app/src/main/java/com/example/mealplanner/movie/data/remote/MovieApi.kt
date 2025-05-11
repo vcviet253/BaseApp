@@ -1,8 +1,5 @@
-package com.example.mealplanner.movie.data.api
+package com.example.mealplanner.movie.data.remote
 
-import com.example.mealplanner.movie.data.remote.dto.moviesbycategory.ResultDto
-import com.example.mealplanner.movie.data.remote.dto.recentlyupdated.RecentlyUpdatedMovies
-import com.example.mealplanner.movie.data.remote.dto.singlemoviedetail.SingleMovieDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -95,7 +95,6 @@ dependencies {
 
     // Retrofit core
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-
     // Converter (Gson is common; use Moshi if preferred)
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
@@ -142,5 +141,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     // Compose Animation (cần thiết cho slideIn, fadeIn, tween...)
     implementation("androidx.compose.animation:animation:1.6.6") // Hoặc phiên bản mới nhất
+
+
+    // Paging 3
+    val paging_version = "3.3.6"
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version") // Hoặc phiên bản mới nhất
+    implementation("androidx.paging:paging-compose:$paging_version") // Tích hợp cho Jetpack Compose
 
 }

@@ -1,4 +1,4 @@
-package com.example.mealplanner.movie.data.remote.mapper
+package com.example.mealplanner.movie.data.mapper
 
 import com.example.mealplanner.movie.domain.model.Category
 import com.example.mealplanner.movie.domain.model.Country
