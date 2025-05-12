@@ -1,5 +1,7 @@
 package com.example.mealplanner.movie.data.remote
 
+import com.example.mealplanner.movie.data.remote.dto.moviesbycategory.ResultDto
+import com.example.mealplanner.movie.domain.model.Category
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -36,5 +38,18 @@ interface MovieApi {
         @Query("country") country: String? = null,
         @Query("year") year: String? = null,
         @Query("limit") limit: Int? = null
-    ): com.example.mealplanner.movie.data.remote.dto.moviesbycategory.ResultDto
+    ): ResultDto
+
+    @GET("v1/api/tim-kiem")
+    suspend fun getMoviesByKeyword(
+        @Query("keyword") keyword: String,
+        @Query("page") page: Int? = null,
+        @Query("sort_field") sortField: String? = null,
+        @Query("sort_type") sortType: String? = null,
+        @Query("sort_lang") sortLang: String? = null,
+        @Query("category") category: String? = null,
+        @Query("country") country: String? = null,
+        @Query("year") year: String? = null,
+        @Query("limit") limit: Int? = null
+    ): ResultDto
 }

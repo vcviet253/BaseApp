@@ -17,6 +17,7 @@ import com.example.mealplanner.movie.presentation.movie.MovieScreen
 import com.example.mealplanner.movie.presentation.moviesbycategory.MoviesByCategoryScreen
 import com.example.mealplanner.movie.presentation.onboarding.OnboardingScreen
 import com.example.mealplanner.movie.presentation.playerscreen.MoviePlayerScreen
+import com.example.mealplanner.movie.presentation.search.MovieSearchScreen
 import com.example.mealplanner.movie.presentation.settings.SettingsScreen
 
 @Composable
@@ -131,5 +132,10 @@ fun MovieAppNavHost(navController: NavHostController) {
             MoviesByCategoryScreen(navController)
         }
 
+        composable(
+            route =  MovieAppDestinations.SEARCH_ROUTE
+        ) {
+            MovieSearchScreen(navController = navController)
+        }
     }
 }

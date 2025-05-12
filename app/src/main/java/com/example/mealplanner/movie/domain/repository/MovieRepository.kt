@@ -26,4 +26,13 @@ interface MovieRepository {
         country: String? = null,
         year: String? = null,
     ): Flow<PagingData<Movie>>
+    fun getMoviesByKeywordPaged(
+        keyword: String,
+        sortField: String? = null,
+        sortType: String? = null,
+        sortLang: String? = null,
+        category: String? = null,
+        country: String? = null,
+        year: String? = null,
+    ): Flow<PagingData<Movie>>
 }

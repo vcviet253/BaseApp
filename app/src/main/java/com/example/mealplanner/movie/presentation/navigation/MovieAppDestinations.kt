@@ -22,6 +22,7 @@ object MovieAppDestinations {
     const val  SETTINGS_ROUTE = "settings" // Route for settings screen
     const val BOOKMARKS_ROUTE = "bookmarks" // Route for bookmarks screen
     const val ONBOARDING_ROUTE = "onboarding" // Route for onboarding screen
+    const val SEARCH_ROUTE = "search" // <-- Route của màn hình tìm kiếm
 
     fun createMoviePlayerRoute(videoUrl: String): String {
         // QUAN TRỌNG: Bạn phải ENCODE URL vì nó sẽ được nhúng vào URI.

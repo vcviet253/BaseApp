@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -25,6 +29,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.mealplanner.movie.domain.model.Movie
+import com.example.mealplanner.movie.presentation.home.MoviePosterCard
+import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
 
 @Composable
 fun MoviesByCategoryScreen(
@@ -38,61 +44,70 @@ fun MoviesByCategoryScreen(
     // Sử dụng Box để có thể overlay các indicator loading hoặc trạng thái rỗng/lỗi
     Box(modifier = Modifier.fillMaxSize()) {
         // Lazy list để hiển thị dữ liệu phân trang
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3), // Số cột
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp), // Padding quanh nội dung list
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Khoảng cách giữa các item
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Sử dụng extension function `items` từ Paging Compose cho LazyPagingItems
-            // Hàm này tự động xử lý sự khác biệt dữ liệu (diffing), placeholders (nếu bật),
-            // và cung cấp từng item Movie (hoặc null nếu placeholder được dùng)
-            items(count = movies.itemCount, key = { it })
-            { index ->
+            items(count  = movies.itemCount, key = { index ->
+                // Nếu có ID thì nên dùng movie?.id thay vì index
+                movies[index]?.metadata?.id ?: index
+            }) { index ->
                 val movie = movies[index]
-                // 'movie' ở đây là một item thuộc kiểu Movie (Domain Model).
-                // Nó có thể là null nếu bạn bật placeholder trong PagingConfig.
-                // Tuy nhiên, mặc định enablePlaceholders=false, nên 'movie' thường không null khi hiển thị.
                 if (movie != null) {
-                    // Gọi Composable để hiển thị một item phim cụ thể
-                    // Sử dụng Composable MovieItem mà chúng ta đã phác thảo trước đó
-                    MovieItem(movie = movie, onMovieClick = {})
+                   MoviePosterCard(movie, { slug ->
+                       navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
+                   })
                 } else {
-                    // Nếu dùng placeholder và item là null, có thể hiển thị một placeholder UI
-                    // Ví dụ: LoadingItemPlaceholder()
+                    // Placeholder UI nếu bật enablePlaceholders = true
+                    // MoviePlaceholderItem()
                 }
             }
 
-            // Xử lý trạng thái tải ở CUỐI danh sách (khi cuộn để tải trang TIẾP THEO)
-            when (movies.loadState.append) {
+            // LoadState.Append (loading page tiếp theo)
+            when (val appendState = movies.loadState.append) {
                 is LoadState.Loading -> {
-                    item { // Thêm một item đặc biệt ở cuối list
+                    item(span = { GridItemSpan(maxLineSpan) }) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator() // Indicator loading nhỏ ở cuối
+                            CircularProgressIndicator()
                         }
                     }
                 }
 
                 is LoadState.Error -> {
-                    // TODO: Hiển thị thông báo lỗi hoặc nút thử lại ở cuối list
-                    // val error = movies.loadState.append as LoadState.Error
-                    // item { Text("Lỗi tải thêm: ${error.error.localizedMessage}") }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            "Lỗi tải thêm: ${appendState.error.localizedMessage}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        )
+                    }
                 }
 
                 is LoadState.NotLoading -> {
-                    // Không làm gì nếu không loading append
                     if (movies.loadState.append.endOfPaginationReached) {
-                        // TODO: Tùy chọn: Hiển thị "Đã hết danh sách"
-                        // item { Text("Đã hết danh sách", modifier = Modifier.fillMaxWidth().padding(16.dp).wrapContentWidth(Alignment.CenterHorizontally)) }
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                "Đã hết danh sách",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
-            // TODO: Xử lý trạng thái tải ở ĐẦU danh sách (prepend) nếu API hỗ trợ
         }
+
 
         // Xử lý trạng thái tải ban đầu (REFRESH) - thường hiển thị toàn màn hình
         when (movies.loadState.refresh) {

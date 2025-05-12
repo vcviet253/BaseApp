@@ -1,5 +1,6 @@
 package com.example.mealplanner.movie.data.repository
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -14,6 +15,8 @@ import com.example.mealplanner.movie.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+
+private const val TAG = "MovieRepositoryImpl"
 
 class MovieRepositoryImpl @Inject constructor(private val api: MovieApi) : MovieRepository {
     override suspend fun getRecentlyUpdatedMovies(): Resource<List<Movie>> {
@@ -92,6 +95,41 @@ class MovieRepositoryImpl @Inject constructor(private val api: MovieApi) : Movie
         ).flow // Luồng PagingData<ItemDto>
             .map { pagingData ->// Map PagingData<ItemDto> sang PagingData<Movie>
                 pagingData.map { itemDto -> // Map tung itemDto sang Movie chua Metadata
+                    Movie(itemDto.toMetadata())
+                }
+            }
+    }
+
+    override fun getMoviesByKeywordPaged(
+        keyword: String,
+        sortField: String?,
+        sortType: String?,
+        sortLang: String?,
+        category: String?,
+        country: String?,
+        year: String?
+    ): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            )
+        ) {
+            MoviesByKeywordPagingSource(
+                api,
+                keyword,
+                sortField,
+                sortType,
+                sortLang,
+                category,
+                country,
+                year,
+                limit = 20
+            )
+        }.flow
+            .map { pagingData ->
+                pagingData.map { itemDto ->
+                    Log.d(TAG, "${itemDto.toMetadata().name}")
                     Movie(itemDto.toMetadata())
                 }
             }
