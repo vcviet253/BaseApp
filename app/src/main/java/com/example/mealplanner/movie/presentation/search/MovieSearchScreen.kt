@@ -105,9 +105,11 @@ fun MovieSearchScreen(
                 // Sử dụng component nhập liệu chuẩn của SearchBar
                 SearchBarDefaults.InputField(
                     query = searchQuery, // Pass query từ ViewModel
-                    onQueryChange = { viewModel.updateSearchQuery(it) }, // Pass onQueryChange vào đây
+                    onQueryChange = { viewModel.updateSearchQuery(it)
+                        active = true }, // Pass onQueryChange vào đây
                     onSearch = { // onSearch xử lý khi người dùng nhấn Enter/Search trên bàn phím
                         keyboardController?.hide() // Ẩn bàn phím
+                        active = false
                         // Optional: thu gọn search bar khi submit nếu cần
                         // isSearchBarExpanded = false
                     },
@@ -117,7 +119,8 @@ fun MovieSearchScreen(
                     },
                     trailingIcon = { // Icon ở cuối input field (ví dụ: nút Xóa)
                         if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { viewModel.updateSearchQuery("") }) { // Logic xóa query
+                            IconButton(onClick = { active = true
+                                viewModel.updateSearchQuery("") }) { // Logic xóa query
                                 Icon(Icons.Default.Close, contentDescription = "Xóa")
                             }
                         }
