@@ -148,7 +148,7 @@ fun FavoriteMovieEntity.toMovie(): Movie {
         poster_url = this.posterUrl, // Lấy Poster URL từ Entity
         quality = "", // Không có trong Entity, dùng chuỗi rỗng
         showtimes = null, // Không có trong Entity
-        slug = this.id, // Thường ID cũng là slug, nếu không thì dùng chuỗi rỗng ""
+        slug = this.slug, // Thường ID cũng là slug, nếu không thì dùng chuỗi rỗng ""
         status = null, // Không có trong Entity
         sub_docquyen = false, // Không có trong Entity, dùng false cho Boolean non-nullable
         thumb_url = this.thumbUrl, // Có thể dùng lại Poster URL hoặc chuỗi rỗng

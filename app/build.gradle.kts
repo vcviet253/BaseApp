@@ -154,5 +154,8 @@ dependencies {
     implementation("androidx.camera:camera-view:$camera_version")
     implementation("androidx.camera:camera-lifecycle:$camera_version")
 
+    // Thư viện YouTube Player Wrapper (của Pierfrancesco Soffritti)
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
 
 }

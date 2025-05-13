@@ -1,5 +1,6 @@
 package com.example.mealplanner.movie.presentation.mylist
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,8 @@ import coil.compose.AsyncImage
 import com.example.mealplanner.R
 import com.example.mealplanner.movie.domain.model.Movie
 import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
+
+private const val TAG = "MyListScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,6 +203,7 @@ fun FavoriteMovieListItem(
             onClick = {
                 if (!isInEditMode) onMovieClick(movie.metadata.slug)
                 else onRemoveFromMyListClick(movie.metadata.slug)
+                Log.d(TAG, "Clicked on ${movie.metadata.slug}")
             },
         ) {
             Icon(

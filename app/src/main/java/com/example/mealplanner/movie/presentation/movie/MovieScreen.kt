@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mealplanner.R
 import com.example.mealplanner.movie.presentation.movie.components.CategoryChipsList
+import com.example.mealplanner.movie.presentation.movie.components.MovieDetailHeader
 import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
@@ -94,8 +96,8 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
     val sheetState = rememberModalBottomSheetState( // Quản lý trạng thái ẩn/hiện của sheet
         skipPartiallyExpanded = true // True nếu chỉ muốn full screen hoặc hidden
     )
-    val scope = rememberCoroutineScope() // Scope để chạy suspend functions (ví dụ: sheetState.show/hide)
-
+    val scope =
+        rememberCoroutineScope() // Scope để chạy suspend functions (ví dụ: sheetState.show/hide)
 
     // --- LaunchedEffect để thu thập các sự kiện UI từ ViewModel ---
     // Chỉ chạy một lần khi Composable được compose (Unit key) hoặc khi dependency thay đổi
@@ -123,7 +125,8 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
                     scope.launch { sheetState.show() } // Hiển thị sheet
                 }
                 // TODO: Xử lý các loại sự kiện UI khác từ ViewModel (ví dụ: hiển thị Snackbar lỗi)
-                 is MovieViewModel.UiEvent.ShowError -> { /* Hiển thị Snackbar hoặc Dialog lỗi */ }
+                is MovieViewModel.UiEvent.ShowError -> { /* Hiển thị Snackbar hoặc Dialog lỗi */
+                }
             }
         }
     }
@@ -165,35 +168,15 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp)
-                                .clip(MaterialTheme.shapes.medium)
-                        ) {
-                            AsyncImage(
-                                model = movieDetail.metadata.thumb_url,
-                                contentDescription = movieDetail.metadata.name,
-                                contentScale = ContentScale.Crop, // Shows the full image, letterboxed if needed
-                                modifier = Modifier.fillMaxSize(), // It will fit within this Box
-                                error = painterResource(id = R.drawable.ic_launcher_background),
-                            )
-
-                            IconButton(
-                                onClick = {
-                                    viewModel.onFavoriteClick(movieDetail)
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = 8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Favorite,
-                                    contentDescription = "Favorite",
-                                    tint = if (isFavorite) Color.Red else Color.Gray // Ví dụ đổi màu
+                        MovieDetailHeader(
+                            movieDetail = movieDetail,
+                            isFavorite = isFavorite,
+                            onFavoriteClick = { movieToToggle ->
+                                viewModel.onFavoriteClick(
+                                    movieToToggle
                                 )
-                            }
-                        }
+                            },
+                        )
 
                         Text(
                             text = movieDetail.metadata.name,
@@ -224,12 +207,14 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
 
                             Button(modifier = Modifier.weight(1f),
                                 shape = slightRoundedCornerShape,
-                                onClick = {}) {
+                                onClick = {
+                                    viewModel.onFavoriteClick(movieDetail)
+                                }) {
                                 Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add"
+                                    imageVector = if (!isFavorite) Icons.Default.Add else Icons.Default.Check,
+                                    contentDescription = "Add/Remove from MyList"
                                 )
-                                Text("My list")
+                                Text(text= "My List")
                             }
                         }
 
