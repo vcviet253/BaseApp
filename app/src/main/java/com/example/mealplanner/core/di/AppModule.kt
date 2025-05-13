@@ -9,7 +9,7 @@ import com.example.mealplanner.data.remote.ChatApi
 import com.example.mealplanner.data.remote.GeminiApi
 import com.example.mealplanner.data.remote.WeatherApi
 import com.example.mealplanner.data.utils.NetworkHelper
-import com.example.mealplanner.movie.data.api.MovieApi
+import com.example.mealplanner.movie.data.remote.MovieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,36 +26,36 @@ object AppModule {
     //Gemini AI API
     @Provides
     @Singleton
-    fun provideGeminiApi(): GeminiApi {
-        return NetworkHelper.createRetrofit(Constants.GEMINI_API_BASE_URL)
+    fun provideGeminiApi(okHttpClient: OkHttpClient): GeminiApi {
+        return NetworkHelper.createRetrofit(Constants.GEMINI_API_BASE_URL, okHttpClient)
             .create(GeminiApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideWeatherApi(): WeatherApi {
-        return NetworkHelper.createRetrofit(Constants.WEATHER_API_BASE_URL)
+    fun provideWeatherApi(okHttpClient: OkHttpClient): WeatherApi {
+        return NetworkHelper.createRetrofit(Constants.WEATHER_API_BASE_URL,okHttpClient)
             .create(WeatherApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideMovieApi(): MovieApi {
-        return NetworkHelper.createRetrofit(Constants.MOVIE_API_BASE_URL)
+    fun provideMovieApi(okHttpClient: OkHttpClient): MovieApi {
+        return NetworkHelper.createRetrofit(Constants.MOVIE_API_BASE_URL, okHttpClient)
             .create(MovieApi::class.java)
     }
 
     //Authentication API (Login)
     @Provides
     @Singleton
-    fun provideAuthApi(): AuthApi {
-        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL).create(AuthApi::class.java)
+    fun provideAuthApi(okHttpClient: OkHttpClient): AuthApi {
+        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL,okHttpClient).create(AuthApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideChatApi(): ChatApi {
-        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL).create(ChatApi::class.java)
+    fun provideChatApi(okHttpClient: OkHttpClient): ChatApi {
+        return NetworkHelper.createRetrofit(Constants.SERVER_BASE_URL,okHttpClient).create(ChatApi::class.java)
     }
 
     //Gemini API Key

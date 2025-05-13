@@ -11,12 +11,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mealplanner.movie.presentation.bookmarks.BookmarksScreen
 import com.example.mealplanner.movie.presentation.home.HomeScreen
 import com.example.mealplanner.movie.presentation.movie.MovieScreen
 import com.example.mealplanner.movie.presentation.moviesbycategory.MoviesByCategoryScreen
+import com.example.mealplanner.movie.presentation.mylist.MyListScreen
 import com.example.mealplanner.movie.presentation.onboarding.OnboardingScreen
 import com.example.mealplanner.movie.presentation.playerscreen.MoviePlayerScreen
+import com.example.mealplanner.movie.presentation.search.MovieSearchScreen
 import com.example.mealplanner.movie.presentation.settings.SettingsScreen
 
 @Composable
@@ -106,9 +107,9 @@ fun MovieAppNavHost(navController: NavHostController) {
             OnboardingScreen(navController = navController)
         }
 
-        composable(MovieAppDestinations.BOOKMARKS_ROUTE) {
+        composable(MovieAppDestinations.FAVORITE_ROUTE) {
             // BookmarksScreen KHÔNG cần định nghĩa Scaffold riêng
-            BookmarksScreen(navController = navController)
+            MyListScreen(navController = navController)
         }
 
         composable(
@@ -131,5 +132,10 @@ fun MovieAppNavHost(navController: NavHostController) {
             MoviesByCategoryScreen(navController)
         }
 
+        composable(
+            route =  MovieAppDestinations.SEARCH_ROUTE
+        ) {
+            MovieSearchScreen(navController = navController)
+        }
     }
 }

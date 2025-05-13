@@ -3,9 +3,10 @@ package com.example.mealplanner.movie.presentation.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,6 +21,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainAppScreen() {
     val navController = rememberNavController()
@@ -55,7 +57,7 @@ fun MainAppScreen() {
 fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
     val items = listOf(
         BottomNavItem("Home", Icons.Default.Home, MovieAppDestinations.HOME_ROUTE),
-        BottomNavItem("Bookmarks", Icons.Default.Bookmark, MovieAppDestinations.BOOKMARKS_ROUTE),
+        BottomNavItem("My List", Icons.Default.Favorite, MovieAppDestinations.FAVORITE_ROUTE),
         BottomNavItem("Settings", Icons.Default.Settings, MovieAppDestinations.SETTINGS_ROUTE)
     )
 
@@ -82,3 +84,4 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
 }
 
 data class BottomNavItem(val label: String, val icon: ImageVector, val route: String)
+

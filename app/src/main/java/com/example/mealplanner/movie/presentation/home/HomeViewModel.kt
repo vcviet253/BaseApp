@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mealplanner.core.common.Resource
+import com.example.mealplanner.movie.data.model.MovieCategory
 import com.example.mealplanner.movie.domain.model.Movie
 import com.example.mealplanner.movie.domain.usecase.GetMoviesByCategoryUseCase
 import com.example.mealplanner.movie.domain.usecase.GetRecentlyUpdatedMoviesUseCase
@@ -34,14 +35,20 @@ class HomeViewModel @Inject constructor(
     private val _recentlyUpdatedState = MutableStateFlow(RecentlyUpdatedState())
     val recentlyUpdatedState: StateFlow<RecentlyUpdatedState> = _recentlyUpdatedState.asStateFlow()
 
+    val movieCategories = listOf(
+        MovieCategory.HOC_DUONG,
+        MovieCategory.GIA_DINH,
+        MovieCategory.TINH_CAM
+    )
+
     init {
         Log.d(TAG, "Start fetching recently updated movies")
         fetchRecentlyUpdatedMovies()
         Log.d(TAG, "Finished fetching recently updated movies")
         Log.d(TAG, "Start fetching movies by category")
-        listOf("hoc-duong", "gia-dinh", "tinh-cam").forEach { category ->
+        movieCategories.forEach { category ->
             Log.d(TAG, "Start fetching $category movies")
-            startFetchingMoviesByCategory(category)
+            startFetchingMoviesByCategory(category.slug)
         }
     }
 

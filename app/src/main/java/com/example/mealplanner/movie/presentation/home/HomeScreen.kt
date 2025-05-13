@@ -27,9 +27,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import com.example.mealplanner.R
 import com.example.mealplanner.movie.domain.model.Movie
@@ -61,89 +70,126 @@ import com.google.accompanist.placeholder.material3.shimmer
 import com.google.accompanist.placeholder.placeholder
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
     // Collecting states
     val recentlyUpdatedState by viewModel.recentlyUpdatedState.collectAsState()
     val movieStates by viewModel.movieStates.collectAsState()
+    val movieCategories = viewModel.movieCategories
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        item {
-            // Recently Updated
-            when {
-                recentlyUpdatedState.isLoading -> {
-                    RecentlyUpdatedMoviesShimmerPagerPlaceHolder()
-                }
-
-                recentlyUpdatedState.error.isNotEmpty() -> {
-                    Text(
-                        recentlyUpdatedState.error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-
-                else -> {
-                    RecentlyUpdatedMoviesPager(
-                        recentlyUpdatedState.movies.take(5)
-                    ) { slug ->
-                        navController.navigate("${AppDestinations.MOVIE_DETAIL_ROUTE_BASE}/${slug}")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { /* Handle navigation icon click */ }
+                    ) {
+                        Icon(Icons.Default.Home, contentDescription = "Home")
                     }
-                }
-            }
-        }
 
-        // Movies by Category (Hành Động, Hài, Tình Cảm)
-        items(listOf("hoc-duong", "gia-dinh", "tinh-cam"), key = { it }) { category ->
-            val categoryState = movieStates[category]
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    category.replace("-", " ").replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleMedium
-                )
-                TextButton(
-                    onClick = {
-                        navController.navigate("${MovieAppDestinations.MOVIES_BY_CATEGORY_BASE_ROUTE}/$category")
-                    }
-                ) {
-                    Text("Xem thêm")
-                }
-            }
-            when {
-                categoryState == null || categoryState.isLoading -> {
-                    ShimmerMovieRowList()
-                }
-
-                categoryState.error.isNotEmpty() -> {
-                    Text(
-                        categoryState.error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-
-                else -> {
-                    MovieListByCategory(
-                        category,
-                        categoryState.movies,
-                        onClick = { slug ->
-                            navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
+                },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate(MovieAppDestinations.SEARCH_ROUTE) {
+                            // Clear the back stack to prevent going back to the search screen
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                    )
+                    }
+                    ) { Icon(Icons.Default.Search, contentDescription = "Search") }
+                })
+
+        },
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                item {
+                    // Recently Updated
+                    when {
+                        recentlyUpdatedState.isLoading -> {
+                            RecentlyUpdatedMoviesShimmerPagerPlaceHolder()
+                        }
+
+                        recentlyUpdatedState.error.isNotEmpty() -> {
+                            Text(
+                                recentlyUpdatedState.error,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+
+                        else -> {
+                            RecentlyUpdatedMoviesPager(
+                                recentlyUpdatedState.movies.take(7)
+                            ) { slug ->
+                                navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/${slug}")
+                            }
+                        }
+                    }
+                }
+
+                // Movies by Category (Hành Động, Hài, Tình Cảm)
+                items(movieCategories, key = { it }) { category ->
+                    val categoryState = movieStates[category.slug]
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            category.displayName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        TextButton(
+                            onClick = {
+                                navController.navigate("${MovieAppDestinations.MOVIES_BY_CATEGORY_BASE_ROUTE}/${category.slug}")
+                            }
+                        ) {
+                            Text("Xem thêm")
+                        }
+                    }
+                    when {
+                        categoryState == null || categoryState.isLoading -> {
+                            ShimmerMovieRowList()
+                        }
+
+                        categoryState.error.isNotEmpty() -> {
+                            Text(
+                                categoryState.error,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+
+                        else -> {
+                            MovieListByCategory(
+                                categoryState.movies,
+                                onClick = { slug ->
+                                    navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
+
 }
 
 @Composable
 fun MovieListByCategory(
-    type: String,
     movies: List<Movie>,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit,
@@ -177,7 +223,7 @@ fun MoviePosterCard(movie: Movie, onClick: (String) -> Unit) {
 
         AsyncImage(
             //  model = movie.metadata.poster_url,
-            model = "https://phimimg.com/${movie.metadata.poster_url.removePrefix("/")}",
+            model = movie.metadata.poster_url,
             contentDescription = movie.metadata.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
@@ -208,12 +254,14 @@ fun MoviePosterCard(movie: Movie, onClick: (String) -> Unit) {
                     color = Color.White,
                     maxLines = 1,
                     overflow = TextOverflow.Clip,
-                    modifier = Modifier.fillMaxWidth().basicMarquee(
-                        animationMode = MarqueeAnimationMode.Immediately, // hoặc WhileFocused
-                        repeatDelayMillis = 1800, //độ trễ trước vong lap tiep theo
-                        spacing = MarqueeSpacing(48.dp), // khoảng cách giữa 2 lần lặp
-                        velocity = 30.dp // tốc độ: dp per second
-                    )
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(
+                            animationMode = MarqueeAnimationMode.Immediately, // hoặc WhileFocused
+                            repeatDelayMillis = 1800, //độ trễ trước vong lap tiep theo
+                            spacing = MarqueeSpacing(48.dp), // khoảng cách giữa 2 lần lặp
+                            velocity = 30.dp // tốc độ: dp per second
+                        )
                 )
             }
         }
