@@ -35,4 +35,7 @@ interface MovieRepository {
         country: String? = null,
         year: String? = null,
     ): Flow<PagingData<Movie>>
+    suspend fun toggleFavoriteStatus(movie:Movie)
+    fun isFavorite(movieId:String): Flow<Boolean>
+    fun getFavoritedMovies(): Flow<List<Movie>>  // Hoặc Flow<PagingData<Movie>> nếu dùng Paging
 }

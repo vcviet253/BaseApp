@@ -20,7 +20,7 @@ object MovieAppDestinations {
     const val HOME_ROUTE = "movie_home" // Phần gốc của route
 
     const val  SETTINGS_ROUTE = "settings" // Route for settings screen
-    const val BOOKMARKS_ROUTE = "bookmarks" // Route for bookmarks screen
+    const val FAVORITE_ROUTE = "favorites" // Route for bookmarks screen
     const val ONBOARDING_ROUTE = "onboarding" // Route for onboarding screen
     const val SEARCH_ROUTE = "search" // <-- Route của màn hình tìm kiếm
 

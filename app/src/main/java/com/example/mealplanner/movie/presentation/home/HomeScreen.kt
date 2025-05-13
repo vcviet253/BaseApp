@@ -129,7 +129,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
                         else -> {
                             RecentlyUpdatedMoviesPager(
-                                recentlyUpdatedState.movies.take(5)
+                                recentlyUpdatedState.movies.take(7)
                             ) { slug ->
                                 navController.navigate("${AppDestinations.MOVIE_DETAIL_ROUTE_BASE}/${slug}")
                             }
@@ -224,7 +224,7 @@ fun MoviePosterCard(movie: Movie, onClick: (String) -> Unit) {
 
         AsyncImage(
             //  model = movie.metadata.poster_url,
-            model = "https://phimimg.com/${movie.metadata.poster_url.removePrefix("/")}",
+            model = movie.metadata.poster_url,
             contentDescription = movie.metadata.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),

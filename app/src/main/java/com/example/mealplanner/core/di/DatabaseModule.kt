@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.mealplanner.data.local.dao.TestDao
 import com.example.mealplanner.data.local.database.AppDatabase
+import com.example.mealplanner.movie.data.local.MovieDatabase
+import com.example.mealplanner.movie.data.local.dao.FavoriteMovieDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +33,26 @@ object DatabaseModule {
     @Provides
     fun provideTestDao(database: AppDatabase): TestDao {
         return database.testDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteMovieDao(
+        database: MovieDatabase
+    ): FavoriteMovieDao {
+        return database.favoriteMovieDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieDatabase(
+        @ApplicationContext context: Context
+    ): MovieDatabase {
+        return Room.databaseBuilder(
+            context,
+            MovieDatabase::class.java,
+            "movie.db"
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 }

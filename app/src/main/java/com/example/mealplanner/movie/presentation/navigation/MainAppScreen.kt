@@ -3,18 +3,15 @@ package com.example.mealplanner.movie.presentation.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -60,7 +57,7 @@ fun MainAppScreen() {
 fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
     val items = listOf(
         BottomNavItem("Home", Icons.Default.Home, MovieAppDestinations.HOME_ROUTE),
-        BottomNavItem("Bookmarks", Icons.Default.Bookmark, MovieAppDestinations.BOOKMARKS_ROUTE),
+        BottomNavItem("My List", Icons.Default.Favorite, MovieAppDestinations.FAVORITE_ROUTE),
         BottomNavItem("Settings", Icons.Default.Settings, MovieAppDestinations.SETTINGS_ROUTE)
     )
 

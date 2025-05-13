@@ -83,7 +83,6 @@ dependencies {
     // Hilt - Dependency Injection
     implementation("com.google.dagger:hilt-android:2.50")
     ksp("com.google.dagger:hilt-compiler:2.50")
-
     // Hilt ViewModel
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
@@ -130,8 +129,8 @@ dependencies {
     implementation("androidx.media3:media3-session:$media3_version")
 
     // ExoPlayer
-     implementation("androidx.media3:media3-exoplayer-hls:$media3_version")
-     implementation("androidx.media3:media3-ui:$media3_version")
+    implementation("androidx.media3:media3-exoplayer-hls:$media3_version")
+    implementation("androidx.media3:media3-ui:$media3_version")
 
     val accompanist_version = "0.34.0"
     implementation("com.google.accompanist:accompanist-placeholder-material3:$accompanist_version")
@@ -147,5 +146,13 @@ dependencies {
     val paging_version = "3.3.6"
     implementation("androidx.paging:paging-runtime-ktx:$paging_version") // Hoặc phiên bản mới nhất
     implementation("androidx.paging:paging-compose:$paging_version") // Tích hợp cho Jetpack Compose
+
+    val camera_version = "1.3.0"
+    //Text OCR for bill scanner
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("androidx.camera:camera-camera2:$camera_version")  // nếu dùng CameraX
+    implementation("androidx.camera:camera-view:$camera_version")
+    implementation("androidx.camera:camera-lifecycle:$camera_version")
+
 
 }
