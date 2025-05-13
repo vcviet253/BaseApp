@@ -62,6 +62,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import com.example.mealplanner.R
+import com.example.mealplanner.movie.data.model.MovieCategory
 import com.example.mealplanner.movie.domain.model.Movie
 import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
 import com.example.mealplanner.presentation.navigation.AppDestinations
@@ -139,7 +140,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 }
 
                 // Movies by Category (Hành Động, Hài, Tình Cảm)
-                items(movieCategories, key = { it }) { category ->
+                items(MovieCategory.entries, key = { it.slug }) { category ->
                     val categoryState = movieStates[category.slug]
                     Row(
                         modifier = Modifier.fillMaxWidth(),

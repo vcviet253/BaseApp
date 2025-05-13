@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
         fetchRecentlyUpdatedMovies()
         Log.d(TAG, "Finished fetching recently updated movies")
         Log.d(TAG, "Start fetching movies by category")
-        movieCategories.forEach { category ->
+        MovieCategory.entries.forEach { category ->
             Log.d(TAG, "Start fetching $category movies")
             startFetchingMoviesByCategory(category.slug)
         }
