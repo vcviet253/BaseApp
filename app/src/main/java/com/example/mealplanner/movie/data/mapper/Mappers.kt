@@ -151,7 +151,7 @@ fun FavoriteMovieEntity.toMovie(): Movie {
         slug = this.id, // Thường ID cũng là slug, nếu không thì dùng chuỗi rỗng ""
         status = null, // Không có trong Entity
         sub_docquyen = false, // Không có trong Entity, dùng false cho Boolean non-nullable
-        thumb_url = this.posterUrl, // Có thể dùng lại Poster URL hoặc chuỗi rỗng
+        thumb_url = this.thumbUrl, // Có thể dùng lại Poster URL hoặc chuỗi rỗng
         time = "", // Không có trong Entity, dùng chuỗi rỗng (hoặc chuyển từ timestamp)
         tmdb = null, // Không có trong Entity
         trailer_url = null, // Không có trong Entity
@@ -173,6 +173,7 @@ fun Movie.toFavoriteMovieEntity(): FavoriteMovieEntity {
         title = this.metadata.name, // Hoặc title
         slug = this.metadata.slug,
         posterUrl = this.metadata.poster_url,
+        thumbUrl = this.metadata.thumb_url,
         // favoritedTimestamp sẽ tự gen khi insert nếu có giá trị default
     )
 }

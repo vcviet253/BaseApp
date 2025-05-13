@@ -131,7 +131,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                             RecentlyUpdatedMoviesPager(
                                 recentlyUpdatedState.movies.take(7)
                             ) { slug ->
-                                navController.navigate("${AppDestinations.MOVIE_DETAIL_ROUTE_BASE}/${slug}")
+                                navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/${slug}")
                             }
                         }
                     }

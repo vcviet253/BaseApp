@@ -9,6 +9,7 @@ data class FavoriteMovieEntity(
     val title: String,
     val slug: String,
     val posterUrl: String,
+    val thumbUrl: String,
     val favoritedTimestamp: Long = System.currentTimeMillis() // Thời gian đánh dấu
     // Có thể thêm các trường khác nếu cần hiển thị offline (vd: year, quality)
 )
