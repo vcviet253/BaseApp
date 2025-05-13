@@ -13,6 +13,7 @@ import com.example.mealplanner.movie.domain.usecase.ToggleFavoriteStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okhttp3.Dispatcher
@@ -129,12 +131,46 @@ class MovieViewModel @Inject constructor(
         }
     }
 
+    // --- COMPLETE onFavoriteClick FUNCTION ---
+    // Hàm được gọi từ UI (e.g., Movie Detail Screen Composable)
+    // khi nút yêu thích được click.
+    // UI sẽ truyền đối tượng Movie đầy đủ cho ViewModel.
     fun onFavoriteClick(movie: Movie) {
-        // Chạy suspend fun của Use Case trong ViewModel's CoroutineScope
-        viewModelScope.launch(Dispatchers.IO) {
-            // Gọi Use Case Bật/Tắt trạng thái yêu thích
-            toggleFavoriteStatusUseCase(movie)
-            // UI sẽ tự động cập nhật trạng thái do isFavorite Flow trong Item Composable thay đổi
+        // Launch một coroutine để thực thi suspend Use Case
+        viewModelScope.launch(Dispatchers.IO) { // Sử dụng IO dispatcher vì liên quan DB/Network
+            Log.d("MovieViewModel", "onFavoriteClick called for movie: ${movie.metadata.name}")
+            try {
+                // Gọi Use Case để Bật/Tắt trạng thái yêu thích.
+                // Use Case/Repository/DAO cần được sửa để TRẢ VỀ BOOLEAN (trạng thái cuối cùng sau khi toggle).
+                val isNowFavorited = toggleFavoriteStatusUseCase(movie) // <-- Use Case trả về Boolean
+
+                // Nếu Use Case hoàn thành mà không ném exception, coi là thành công.
+                // Gửi sự kiện tới UI để hiển thị Bottom Sheet xác nhận.
+                Log.d("MovieViewModel", "Toggle successful. Is now favorited: $isNowFavorited")
+                _uiEvent.send(UiEvent.ShowFavoriteToggleSuccess(movie.metadata.name))
+
+            } catch (e: Exception) {
+                // Xử lý lỗi có thể xảy ra trong quá trình toggle (ví dụ: lỗi DB, lỗi mapping)
+                Log.e("MovieViewModel", "Error toggling favorite status for movie: ${movie.metadata.name}", e)
+                // Gửi sự kiện lỗi tới UI để hiển thị thông báo lỗi
+                _uiEvent.send(UiEvent.ShowError(e.localizedMessage ?: "Unknown error toggling favorite"))
+            }
         }
     }
+    // --- END onFavoriteClick FUNCTION --
+
+    // --- Channel để gửi các sự kiện một lần tới UI ---
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    // Định nghĩa các loại sự kiện UI có thể gửi
+    sealed class UiEvent {
+        // Sự kiện báo hiệu thao tác toggle favorite đã thành công
+        // Bao gồm tên phim và trạng thái cuối cùng (true: đã thêm, false: đã xóa)
+        data class ShowFavoriteToggleSuccess(val movieName: String) : UiEvent()
+        // TODO: Thêm các loại sự kiện khác nếu cần (ví dụ: ShowError, NavigateTo...)
+        data class ShowError(val message: String) : UiEvent() // <-- Ví dụ sự kiện lỗi
+    }
+    // --- Kết thúc Channel và sealed class ---
+
 }

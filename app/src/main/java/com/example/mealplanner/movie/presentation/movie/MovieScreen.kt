@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.mealplanner.movie.presentation.movie
 
 import android.util.Log
@@ -33,13 +35,21 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -52,12 +62,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mealplanner.R
 import com.example.mealplanner.movie.presentation.movie.components.CategoryChipsList
 import com.example.mealplanner.movie.presentation.navigation.MovieAppDestinations
+import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -69,6 +81,53 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
     val episodeServerGroups by viewModel.episodeServerGroups.collectAsState() // Lấy danh sách các nhóm server
     val currentServerIndex by viewModel.currentServerIndex.collectAsState() // Lấy index server đang chọn để hiển thị tập tương ứng
     val isFavorite by viewModel.isFavorite.collectAsState()
+
+    // --- State để điều khiển hiển thị Bottom Sheet ---
+    var showFavoriteToggleBottomSheet by remember { mutableStateOf(false) }
+    // State để lưu nội dung hiển thị trong Bottom Sheet
+    var bottomSheetMessage by remember { mutableStateOf("") }
+    // State cho action của nút trong Bottom Sheet (ví dụ: đi đến danh sách yêu thích)
+    var bottomSheetButtonAction by remember { mutableStateOf<(() -> Unit)?>(null) } // Lambda của nút
+    var bottomSheetButtonText by remember { mutableStateOf<String?>(null) } // Text của nút
+
+    // State và scope cho ModalBottomSheet của Material 3
+    val sheetState = rememberModalBottomSheetState( // Quản lý trạng thái ẩn/hiện của sheet
+        skipPartiallyExpanded = true // True nếu chỉ muốn full screen hoặc hidden
+    )
+    val scope = rememberCoroutineScope() // Scope để chạy suspend functions (ví dụ: sheetState.show/hide)
+
+
+    // --- LaunchedEffect để thu thập các sự kiện UI từ ViewModel ---
+    // Chỉ chạy một lần khi Composable được compose (Unit key) hoặc khi dependency thay đổi
+    LaunchedEffect(Unit) {
+        // Thu thập các sự kiện từ uiEvent Flow của ViewModel
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is MovieViewModel.UiEvent.ShowFavoriteToggleSuccess -> {
+                    // Khi nhận được sự kiện thành công
+                    bottomSheetMessage = "Đã thêm '${event.movieName}' vào danh sách yêu thích."
+
+                    // Chuẩn bị action cho nút trong Bottom Sheet (ví dụ: đi đến màn hình Yêu thích)
+                    bottomSheetButtonText = "Xem Danh Sách Yêu Thích"
+                    bottomSheetButtonAction = {
+                        // Action thực sự: Điều hướng
+                        navController.navigate(MovieAppDestinations.FAVORITE_ROUTE) {
+                            // Tùy chọn navigation options (ví dụ: clear stack)
+                            // popUpTo(...)
+                        }
+                    }
+
+                    // Cập nhật state để hiển thị Bottom Sheet
+                    showFavoriteToggleBottomSheet = true
+                    // Chạy suspend fun sheetState.show() trong coroutine scope
+                    scope.launch { sheetState.show() } // Hiển thị sheet
+                }
+                // TODO: Xử lý các loại sự kiện UI khác từ ViewModel (ví dụ: hiển thị Snackbar lỗi)
+                 is MovieViewModel.UiEvent.ShowError -> { /* Hiển thị Snackbar hoặc Dialog lỗi */ }
+            }
+        }
+    }
+    // --- Kết thúc LaunchedEffect ---
 
     when (val currentMovieResource = movieResource) {
         is Resource.Loading -> {
@@ -341,4 +400,51 @@ fun MovieScreen(navController: NavController, viewModel: MovieViewModel = hiltVi
             }
         }
     }
+
+    // --- Composable Modal Bottom Sheet ---
+    // Chỉ compose khi showFavoriteToggleBottomSheet là true
+    if (showFavoriteToggleBottomSheet) {
+        ModalBottomSheet(
+            // Khi sheet bị dismiss (bấm ra ngoài, vuốt xuống)
+            onDismissRequest = {
+                // Cập nhật state để ẩn sheet
+                showFavoriteToggleBottomSheet = false
+                // Optional: Nếu cần xử lý logic sau khi dismiss bằng swipe, thêm LaunchedEffect với key là sheetState.currentValue
+            },
+            sheetState = sheetState // Gắn state quản lý của sheet
+        ) {
+            // Nội dung hiển thị BÊN TRONG Bottom Sheet
+            Column(
+                modifier = Modifier
+                    .padding(16.dp) // Padding nội dung
+                    .fillMaxWidth(), // Chiếm toàn bộ chiều rộng
+                horizontalAlignment = Alignment.CenterHorizontally // Căn giữa theo chiều ngang
+            ) {
+                // Thông báo xác nhận
+                Text(
+                    bottomSheetMessage,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center // Căn giữa text
+                )
+
+                Spacer(modifier = Modifier.height(16.dp)) // Khoảng cách
+
+                // Nút tùy chọn cho hành động tiếp theo
+                if (bottomSheetButtonText != null && bottomSheetButtonAction != null) {
+                    Button(onClick = {
+                        // Chạy suspend fun hide() trong scope
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            // Thực hiện action sau khi sheet đã ẩn hoàn toàn
+                            bottomSheetButtonAction?.invoke()
+                        }
+                    }) {
+                        Text(bottomSheetButtonText ?: "", fontWeight = FontWeight.Bold)
+                    }
+                }
+                // Optional: Thêm khoảng cách cuối nếu cần
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+    // --- Kết thúc Composable Bottom Sheet ---
 }
