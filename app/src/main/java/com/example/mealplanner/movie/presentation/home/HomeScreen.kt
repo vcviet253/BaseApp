@@ -76,6 +76,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     // Collecting states
     val recentlyUpdatedState by viewModel.recentlyUpdatedState.collectAsState()
     val movieStates by viewModel.movieStates.collectAsState()
+    val movieCategories = viewModel.movieCategories
 
     Scaffold(
         topBar = {
@@ -138,20 +139,20 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 }
 
                 // Movies by Category (Hành Động, Hài, Tình Cảm)
-                items(listOf("hoc-duong", "gia-dinh", "tinh-cam"), key = { it }) { category ->
-                    val categoryState = movieStates[category]
+                items(movieCategories, key = { it }) { category ->
+                    val categoryState = movieStates[category.slug]
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            category.replace("-", " ").replaceFirstChar { it.uppercase() },
+                            category.displayName,
                             style = MaterialTheme.typography.titleMedium
                         )
                         TextButton(
                             onClick = {
-                                navController.navigate("${MovieAppDestinations.MOVIES_BY_CATEGORY_BASE_ROUTE}/$category")
+                                navController.navigate("${MovieAppDestinations.MOVIES_BY_CATEGORY_BASE_ROUTE}/${category.slug}")
                             }
                         ) {
                             Text("Xem thêm")
@@ -171,7 +172,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
                         else -> {
                             MovieListByCategory(
-                                category,
                                 categoryState.movies,
                                 onClick = { slug ->
                                     navController.navigate("${MovieAppDestinations.MOVIE_DETAIL_ROUTE_BASE}/$slug")
@@ -190,7 +190,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
 @Composable
 fun MovieListByCategory(
-    type: String,
     movies: List<Movie>,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit,
